@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.function.Supplier;
 
+import org.hibernate.validator.constraints.UniqueElements;
+
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.HasValueAndElement;
@@ -15,20 +17,22 @@ import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.renderer.IconRenderer;
 import com.vaadin.flow.router.Route;
 
 @Route("")
-public class MultiFieldDemo extends FlexLayout { //TODO move to test
+public class MultiFieldDemo extends FlexLayout {
 
     public MultiFieldDemo() {
         setSizeFull();
 
         final MultiField<String> emails = new MultiField<>(EmailField::new);
-        emails.setLabel("Emails");
+        emails.setLabel("Emails2");
         final Label statusLabel = new Label("");
 
         final MultiField<VaadinIcon> icons = new MultiField<>(() -> {
@@ -66,7 +70,7 @@ public class MultiFieldDemo extends FlexLayout { //TODO move to test
         });
         mixedFields.setLabel("Mixed fields");
 
-        final Binder<Person> binder = new Binder<>(Person.class);
+        final Binder<Person> binder = new BeanValidationBinder<>(Person.class);
 
         binder.forField(emails)
                 .asRequired("Add at least one item")
@@ -81,13 +85,14 @@ public class MultiFieldDemo extends FlexLayout { //TODO move to test
         person.setIcons(Arrays.asList(VaadinIcon.PLUS_SQUARE_O, null, VaadinIcon.ALT_A));
         binder.readBean(person);
 
-        final FormLayout formLayout = new FormLayout(emails, icons, mixedFields);
+        final FormLayout formLayout = new FormLayout(new VerticalLayout(emails, statusLabel), icons, mixedFields);
         formLayout.setSizeFull();
         add(formLayout);
     }
 
     public static class Person {
 
+        @UniqueElements
         private Collection<String> emails;
         private Collection<VaadinIcon> icons;
         private Collection<Object> mixed;

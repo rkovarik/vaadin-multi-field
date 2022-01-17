@@ -9,6 +9,7 @@ Simple use case
 ----
 include::src/test/java/com/vaadin/addons/flow/components/MultiFieldDemo.java[lines = 30..30]
 ----
+image::src/test/resources/Jan-17-2022 11-06-58.gif[]
 
 Advanced use case
 [source,java]
