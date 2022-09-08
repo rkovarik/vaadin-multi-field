@@ -10,16 +10,20 @@ import {Button} from "@vaadin/button";
 @customElement('mgnl-multi-field')
 export class GroceryView extends LitElement {
 
-    // render() {
-    //     return html`
-    //         <vaadin-vertical-layout>
-    //             <slot></slot>
-    //             <vaadin-text-field class="template"></vaadin-text-field>
-    //             <vaadin-button onclick="">+</vaadin-button>
-    //         </vaadin-vertical-layout>`;
-    // }
-
     render() {
+        return html`
+            <vaadin-vertical-layout class="multi-field-root">
+                <vaadin-horizontal-layout>
+                    <slot class="slot"></slot>
+                    <vaadin-button @click="${this.getOnclick}">
+                        <vaadin-icon icon="vaadin:phone"></vaadin-icon>
+                    </vaadin-button>
+                </vaadin-horizontal-layout>
+                <vaadin-button @click="${this.getOnclick}">+</vaadin-button>
+            </vaadin-vertical-layout>`;
+    }
+
+    render2() {
         let layout = new VerticalLayout();
         layout.append(this.getElementsByTagName("slot")[0])
         this.assignedSlot
@@ -28,17 +32,19 @@ export class GroceryView extends LitElement {
         // this.slot
         let button = new Button();
         button.innerText = "+";
-        button.onclick = () => {
-            let newField = new TextField(); //layout.firstChild?.cloneNode();
-            button.before(newField)
-            newField.focus()
-            // if (newField) {
-            //     layout.replaceChild(newField, button);
-            //     layout.appendChild(button);
-            // }
-        };
+        // button.onclick = this.getOnclick(button);
         layout.appendChild(button);
         return layout;
     }
 
+    private getOnclick() {
+        let newField = new TextField();
+        // this.getElementsByClassName("slot").item(0)
+        console.warn(newField)
+        // this.shadowRoot?.querySelector("#slot")?.childNodes.item(0);
+        if (newField) {
+            this.appendChild(newField);
+            // newField.focus()
+        }
+    }
 }
