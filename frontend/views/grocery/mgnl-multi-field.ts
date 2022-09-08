@@ -15,13 +15,13 @@ import {AbstractModel, Binder, FieldStrategy, ModelConstructor} from "@hilla/for
 @customElement('mgnl-multi-field')
 export class GroceryView extends LitElement {
 
-    // @property({ type: String }) label = '';
-    // @property({ type: String }) value = '';
-    //
-    // // custom properties that do not work with the default Binder
-    // @property({ type: Boolean }) mandatory = false;
-    // @property({ type: Boolean }) hasError = false;
-    // @property({ type: String }) error = '';
+    @property({ type: String }) label = '';
+    @property({ type: String }) value = '';
+
+    // custom properties that do not work with the default Binder
+    @property({ type: Boolean }) mandatory = false;
+    @property({ type: Boolean }) hasError = false;
+    @property({ type: String }) error = '';
 
     private field: Node = new TextField();
 
@@ -61,36 +61,36 @@ export class GroceryView extends LitElement {
     }
 }
 
-// export class MyTextFieldStrategy implements FieldStrategy {
-//     constructor(public element: GroceryView) {}
-//
-//     set required(required: boolean) {
-//         this.element.mandatory = required;
-//     }
-//
-//     set invalid(invalid: boolean) {
-//         this.element.hasError = invalid;
-//     }
-//
-//     set errorMessage(errorMessage: string) {
-//         this.element.error = errorMessage;
-//     }
-//
-//     readonly model: AbstractModel<any> | undefined;
-//     value: any;
-//     // ...
-// }
-//
-// export class MyBinder<T, M extends AbstractModel<T>> extends Binder<T, M> {
-//     constructor(context: Element, model: ModelConstructor<T, M>) {
-//         super(context, model);
-//     }
-//
-//     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-//     getFieldStrategy(element: any): FieldStrategy {
-//         if (element.localName === 'mgnl-multi-field') {
-//             return new MyTextFieldStrategy(element);
-//         }
-//         return super.getFieldStrategy(element);
-//     }
-// }
+export class MyTextFieldStrategy implements FieldStrategy {
+    constructor(public element: GroceryView) {}
+
+    set required(required: boolean) {
+        this.element.mandatory = required;
+    }
+
+    set invalid(invalid: boolean) {
+        this.element.hasError = invalid;
+    }
+
+    set errorMessage(errorMessage: string) {
+        this.element.error = errorMessage;
+    }
+
+    readonly model: AbstractModel<any> | undefined;
+    value: any;
+    // ...
+}
+
+export class MyBinder<T, M extends AbstractModel<T>> extends Binder<T, M> {
+    constructor(context: Element, model: ModelConstructor<T, M>) {
+        super(context, model);
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    getFieldStrategy(element: any): FieldStrategy {
+        if (element.localName === 'mgnl-multi-field') {
+            return new MyTextFieldStrategy(element);
+        }
+        return super.getFieldStrategy(element);
+    }
+}
