@@ -1,5 +1,5 @@
 import {html, LitElement} from 'lit';
-import {customElement} from 'lit/decorators.js';
+import {customElement, property} from 'lit/decorators.js';
 import '@vaadin/custom-field';
 import '@vaadin/text-field'
 import '@vaadin/vertical-layout'
@@ -10,9 +10,18 @@ import {TextField} from "@vaadin/text-field";
 import {VerticalLayout} from "@vaadin/vertical-layout";
 import {HorizontalLayout} from "@vaadin/horizontal-layout";
 import {CustomField} from "@vaadin/custom-field";
+import {AbstractModel, Binder, FieldStrategy, ModelConstructor} from "@hilla/form";
 
 @customElement('mgnl-multi-field')
 export class GroceryView extends LitElement {
+
+    // @property({ type: String }) label = '';
+    // @property({ type: String }) value = '';
+    //
+    // // custom properties that do not work with the default Binder
+    // @property({ type: Boolean }) mandatory = false;
+    // @property({ type: Boolean }) hasError = false;
+    // @property({ type: String }) error = '';
 
     private field: Node = new TextField();
 
@@ -50,31 +59,38 @@ export class GroceryView extends LitElement {
         button.innerText = "remove"
         return button;
     }
-
-    render2() {
-        return html`
-            <vaadin-vertical-layout class="multi-field-root">
-                <vaadin-horizontal-layout id="multi-field-container">
-                    <slot class="slot"></slot>
-                    <vaadin-button @click="${this.removeField}">
-                        <vaadin-icon icon="vaadin:trash"></vaadin-icon>
-                    </vaadin-button>
-                </vaadin-horizontal-layout>
-                <vaadin-button id="add-field-button" @click="${this.addField}">+</vaadin-button>
-            </vaadin-vertical-layout>`;
-    }
-
-    private addField() {
-        let newFieldContainer = new TextField(); // this.shadowRoot?.getElementById("multi-field-container")?.cloneNode(true)
-        let allFieldsContainer = this.firstElementChild?.parentElement //.shadowRoot?.getElementById("multi-field-root"); //.getElementsByTagName("vaadin-horizontal-layout");
-        console.warn(allFieldsContainer)
-        if (newFieldContainer) {
-            allFieldsContainer?.append(newFieldContainer);
-            // newField.focus()
-        }
-    }
-
-    private removeField() {
-        this.shadowRoot?.getElementById("multi-field-container")?.remove();
-    }
 }
+
+// export class MyTextFieldStrategy implements FieldStrategy {
+//     constructor(public element: GroceryView) {}
+//
+//     set required(required: boolean) {
+//         this.element.mandatory = required;
+//     }
+//
+//     set invalid(invalid: boolean) {
+//         this.element.hasError = invalid;
+//     }
+//
+//     set errorMessage(errorMessage: string) {
+//         this.element.error = errorMessage;
+//     }
+//
+//     readonly model: AbstractModel<any> | undefined;
+//     value: any;
+//     // ...
+// }
+//
+// export class MyBinder<T, M extends AbstractModel<T>> extends Binder<T, M> {
+//     constructor(context: Element, model: ModelConstructor<T, M>) {
+//         super(context, model);
+//     }
+//
+//     // eslint-disable-next-line @typescript-eslint/no-explicit-any
+//     getFieldStrategy(element: any): FieldStrategy {
+//         if (element.localName === 'mgnl-multi-field') {
+//             return new MyTextFieldStrategy(element);
+//         }
+//         return super.getFieldStrategy(element);
+//     }
+// }
