@@ -9,7 +9,7 @@ import {Button} from "@vaadin/button";
 import {TextField} from "@vaadin/text-field";
 import {VerticalLayout} from "@vaadin/vertical-layout";
 import {HorizontalLayout} from "@vaadin/horizontal-layout";
-import {field} from "@hilla/form";
+import {CustomField} from "@vaadin/custom-field";
 
 @customElement('mgnl-multi-field')
 export class GroceryView extends LitElement {
@@ -21,19 +21,34 @@ export class GroceryView extends LitElement {
         let button = new Button();
         this.createFieldContainer(button);
         button.innerText = "+"
-        button.onclick = ev => this.createFieldContainer(button);
+        button.onclick = () => this.createFieldContainer(button);
         verticalLayout.append(button)
-        return verticalLayout;
+
+        let customField = new CustomField();
+        customField.append(verticalLayout)
+        return customField;
     }
 
     private createFieldContainer(addButton: Button) {
         let horizontalLayout = new HorizontalLayout();
         let newField = this.field.cloneNode();
         horizontalLayout.append(newField)
+        let removeButton = this.createButton();
+        removeButton.onclick = () => horizontalLayout.remove()
+        horizontalLayout.append(removeButton)
         addButton.before(horizontalLayout)
         if (newField instanceof TextField) {
             newField.focus();
         }
+    }
+
+    private createButton() {
+        let button = new Button();
+        let icon = new Icon();
+        icon.icon = "vaadin:trash"
+        button.append(icon)
+        button.innerText = "remove"
+        return button;
     }
 
     render2() {
@@ -49,7 +64,7 @@ export class GroceryView extends LitElement {
             </vaadin-vertical-layout>`;
     }
 
-    private addField() { new Button().onclick
+    private addField() {
         let newFieldContainer = new TextField(); // this.shadowRoot?.getElementById("multi-field-container")?.cloneNode(true)
         let allFieldsContainer = this.firstElementChild?.parentElement //.shadowRoot?.getElementById("multi-field-root"); //.getElementsByTagName("vaadin-horizontal-layout");
         console.warn(allFieldsContainer)
