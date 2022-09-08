@@ -11,12 +11,13 @@ import {VerticalLayout} from "@vaadin/vertical-layout";
 import {HorizontalLayout} from "@vaadin/horizontal-layout";
 import {CustomField} from "@vaadin/custom-field";
 import {AbstractModel, Binder, FieldStrategy, ModelConstructor} from "@hilla/form";
+import {CounterEndpoint} from "Frontend/generated/endpoints";
 
 @customElement('mgnl-multi-field')
 export class GroceryView extends LitElement {
 
     @property({ type: String }) label = '';
-    @property({ type: String }) value = '';
+    @property({ type: String }) value = [2];
 
     // custom properties that do not work with the default Binder
     @property({ type: Boolean }) mandatory = false;
@@ -83,15 +84,18 @@ export class MyTextFieldStrategy implements FieldStrategy {
 
 export class MyBinder<T, M extends AbstractModel<T>> extends Binder<T, M> {
     constructor(context: Element, model: ModelConstructor<T, M>) {
-        super(context, model);
+        super(context, model, {
+            onSubmit: value => CounterEndpoint.submit(value) //TODO extract
+        });
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     getFieldStrategy(element: any): FieldStrategy {
+        console.warn("dewa")
         if (element.localName === 'mgnl-multi-field') {
-            console.warn("dewa")
             return new MyTextFieldStrategy(element);
         }
         return super.getFieldStrategy(element);
     }
+
 }
