@@ -89,6 +89,7 @@ export class MyBinder<T, M extends AbstractModel<T>> extends Binder<T, M> {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     getFieldStrategy(element: any): FieldStrategy {
         if (element.localName === 'mgnl-multi-field') {
+            console.warn("dewa")
             return new MyTextFieldStrategy(element);
         }
         return super.getFieldStrategy(element);

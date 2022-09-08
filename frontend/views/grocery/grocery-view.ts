@@ -17,12 +17,11 @@ export class GroceryView extends View {
                 <h2>This place intentionally left empty</h2>
                 <p>It’s a place where you can grow your own UI 🤗</p>
                 <mgnl-multi-field>
-                    <vaadin-text-field></vaadin-text-field>
+                    <vaadin-text-field ...="${field(this.binder.model)}"></vaadin-text-field>
                 </mgnl-multi-field>
+                <vaadin-button @click="${this.binder.validate}"></vaadin-button>
             </div>`;
     }
-//     <vaadin-button @click="${this.binder.validate}"></vaadin-button>
-//...="${field(this.binder.model)}"
     connectedCallback() {
         super.connectedCallback();
         this.classList.add(
