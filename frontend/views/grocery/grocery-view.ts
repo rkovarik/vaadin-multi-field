@@ -10,14 +10,11 @@ import {CounterEndpoint} from "Frontend/generated/endpoints";
 @customElement('grocery-view')
 export class GroceryView extends View {
 
-    private binder = new MyBinder(this, BeanModel)
+    private binder = new Binder(this, BeanModel)
 
     render() {
         return html`
             <div>
-                <img style="width: 200px;" src="images/empty-plant.png"/>
-                <h2>This place intentionally left empty</h2>
-<!--                <vaadin-text-field ...="${field(this.binder.model.aString)}"></vaadin-text-field>-->
                 <mgnl-multi-field ...="${field(this.binder.model.aString)}">
                     <vaadin-text-field></vaadin-text-field>
                 </mgnl-multi-field>

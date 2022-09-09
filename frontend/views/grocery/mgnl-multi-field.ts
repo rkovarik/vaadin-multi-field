@@ -30,8 +30,10 @@ class GroceryView extends LitElement {
         let verticalLayout = new VerticalLayout();
         let addButton = new Button();
         verticalLayout.append(addButton)
-        for (const element of this.value) {
-            this.createFieldContainer(addButton, element)
+        if (this.value) {
+            for (const element of this.value.split('\t')) {
+                this.createFieldContainer(addButton, element)
+            }
         }
         addButton.innerText = "+"
         addButton.onclick = () => this.createFieldContainer(addButton, undefined);
@@ -46,6 +48,8 @@ class GroceryView extends LitElement {
         let removeButton = this.createButton();
         removeButton.onclick = () => {
             horizontalLayout.remove();
+            // value?.replace(value, '');
+            // this.value = "2"
         }
         horizontalLayout.append(removeButton)
         addButton.before(horizontalLayout)
@@ -81,11 +85,11 @@ export class MyTextFieldStrategy extends AbstractFieldStrategy<string> { //imple
         // this.element.hasError = invalid;
     }
     // get value() {
-    //     return "this.value";
+    //     return this.element.value;
     // }
-
+    //
     // set value(value: string) {
-    //     // this.value = value;
+    //     this.element.value = value;
     // }
 
     //

@@ -7,7 +7,7 @@ import java.util.Collection;
 public class Bean {
 
     private Collection<String> collection = Arrays.asList("1", "2");
-    private String aString = "test";
+    private String aString = "1\t2";
 
     public Collection<String> getCollection() {
         return collection;
