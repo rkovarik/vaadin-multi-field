@@ -1,5 +1,5 @@
 import {html, LitElement} from 'lit';
-import {customElement, property} from 'lit/decorators.js';
+import {customElement, property, state} from 'lit/decorators.js';
 import '@vaadin/custom-field';
 import '@vaadin/text-field'
 import '@vaadin/vertical-layout'
@@ -14,24 +14,37 @@ import {AbstractFieldStrategy, AbstractModel, Binder, FieldStrategy, ModelConstr
 @customElement('mgnl-multi-field')
 class GroceryView extends LitElement {
 
+    get value(): string {
+        let value = ''
+        this.inputs.forEach(input => value += input.value + '\t')
+        return value;
+            // .filter(value1 => value1 instanceof TextField)
+            // .map(field => field.value)
+            // .join('\t');
+    }
+
+    set value(value: string) {
+        this._value = value;
+    }
+
     @property({type: String}) label = '';
-    @property({type: String}) value = '';
+    @property({type: String}) private _value = '';
 
     // custom properties that do not work with the default Binder
     @property({type: Boolean}) mandatory = false;
     @property({type: Boolean}) hasError = false;
     @property({type: String}) error = '';
 
-    readonly inputs: Node[] | undefined;
+    @state() inputs: Set<TextField> = new Set<TextField>();
 
-    private field: Node = new TextField();
+    // private field: Node = new TextField();
 
     render() {
         let verticalLayout = new VerticalLayout();
         let addButton = new Button();
         verticalLayout.append(addButton)
-        if (this.value) {
-            for (const element of this.value.split('\t')) {
+        if (this._value) {
+            for (const element of this._value.split('\t')) {
                 this.createFieldContainer(addButton, element)
             }
         }
@@ -42,14 +55,15 @@ class GroceryView extends LitElement {
 
     private createFieldContainer(addButton: Button, value: string | undefined) {
         let horizontalLayout = new HorizontalLayout();
-        let newField = this.field.cloneNode();
-        this.inputs?.push(newField);
+        let newField = new TextField(); //this.field.cloneNode();
+        this.inputs.add(newField);
         horizontalLayout.append(newField)
         let removeButton = this.createButton();
         removeButton.onclick = () => {
             horizontalLayout.remove();
             // value?.replace(value, '');
-            // this.value = "2"
+            // this._value += value
+            this.inputs.delete(newField);
         }
         horizontalLayout.append(removeButton)
         addButton.before(horizontalLayout)
