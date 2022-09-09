@@ -9,35 +9,30 @@ import {Button} from "@vaadin/button";
 import {TextField} from "@vaadin/text-field";
 import {VerticalLayout} from "@vaadin/vertical-layout";
 import {HorizontalLayout} from "@vaadin/horizontal-layout";
-import {AbstractModel, Binder, FieldStrategy, ModelConstructor} from "@hilla/form";
+import {AbstractFieldStrategy, AbstractModel, Binder, FieldStrategy, ModelConstructor} from "@hilla/form";
 
 @customElement('mgnl-multi-field')
 class GroceryView extends LitElement {
 
     @property({type: String}) label = '';
-    @property({type: [String]}) value = [];
+    @property({type: String}) value = '';
 
     // custom properties that do not work with the default Binder
     @property({type: Boolean}) mandatory = false;
     @property({type: Boolean}) hasError = false;
     @property({type: String}) error = '';
 
+    readonly inputs: Node[] | undefined;
+
     private field: Node = new TextField();
 
-    // render() {
-    //     return html`${this.error}`;
-    // }
-
     render() {
-        // console.error("dewa" + this.value.values().next())
         let verticalLayout = new VerticalLayout();
         let addButton = new Button();
         verticalLayout.append(addButton)
-        // this.createFieldContainer(addButton, this.value)
         for (const element of this.value) {
             this.createFieldContainer(addButton, element)
         }
-        // this.value.forEach(value => this.createFieldContainer(addButton, value));
         addButton.innerText = "+"
         addButton.onclick = () => this.createFieldContainer(addButton, undefined);
         return verticalLayout;
@@ -46,15 +41,17 @@ class GroceryView extends LitElement {
     private createFieldContainer(addButton: Button, value: string | undefined) {
         let horizontalLayout = new HorizontalLayout();
         let newField = this.field.cloneNode();
+        this.inputs?.push(newField);
         horizontalLayout.append(newField)
         let removeButton = this.createButton();
-        removeButton.onclick = () => horizontalLayout.remove()
+        removeButton.onclick = () => {
+            horizontalLayout.remove();
+        }
         horizontalLayout.append(removeButton)
         addButton.before(horizontalLayout)
         if (newField instanceof TextField) {
             if (value) newField.value = value;
             newField.focus();
-            // this.value.push(newField);
         }
     }
 
@@ -70,24 +67,33 @@ class GroceryView extends LitElement {
 
 export default GroceryView;
 
-export class MyTextFieldStrategy implements FieldStrategy {
-    constructor(public element: GroceryView) {
-    }
-
+export class MyTextFieldStrategy extends AbstractFieldStrategy<string> { //implements FieldStrategy
+    // constructor(public element: GroceryView) {
+    //     super();
+    //     console.error("dewa")
+    // }
+    //
     set required(required: boolean) {
-        this.element.mandatory = required;
+        // this.element.mandatory = required;
     }
 
     set invalid(invalid: boolean) {
-        this.element.hasError = invalid;
+        // this.element.hasError = invalid;
     }
+    // get value() {
+    //     return "this.value";
+    // }
 
-    set errorMessage(errorMessage: string) {
-        this.element.error = errorMessage;
-    }
+    // set value(value: string) {
+    //     // this.value = value;
+    // }
 
-    readonly model: AbstractModel<any> | undefined;
-    value: any;
+    //
+    // set errorMessage(errorMessage: string) {
+    //     this.element.error = errorMessage;
+    // }
+    //
+    // readonly model: AbstractModel<any> | undefined;
 }
 
 export class MyBinder<T, M extends AbstractModel<T>> extends Binder<T, M> {

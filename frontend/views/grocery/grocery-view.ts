@@ -17,15 +17,14 @@ export class GroceryView extends View {
             <div>
                 <img style="width: 200px;" src="images/empty-plant.png"/>
                 <h2>This place intentionally left empty</h2>
-                <mgnl-multi-field value="['2']">
+<!--                <vaadin-text-field ...="${field(this.binder.model.aString)}"></vaadin-text-field>-->
+                <mgnl-multi-field ...="${field(this.binder.model.aString)}">
                     <vaadin-text-field></vaadin-text-field>
                 </mgnl-multi-field>
                 <vaadin-button @click="${() => this.binder.submitTo(CounterEndpoint.submit)}"></vaadin-button>
             </div>`;
     }
 
-    //...="${field(this.binder.model.collection)}"
-    //...="${field(this.binder.model._string)}"
 
     async firstUpdated(arg: any) {
         super.firstUpdated(arg);

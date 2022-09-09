@@ -16,6 +16,6 @@ public class CounterEndpoint {
     }
 
     public void submit(Bean bean) {
-        var string = bean.getString();
+        var string = bean.getaString();
     }
 }

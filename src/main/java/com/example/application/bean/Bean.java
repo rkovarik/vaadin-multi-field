@@ -7,7 +7,7 @@ import java.util.Collection;
 public class Bean {
 
     private Collection<String> collection = Arrays.asList("1", "2");
-    private String string = "test";
+    private String aString = "test";
 
     public Collection<String> getCollection() {
         return collection;
@@ -17,11 +17,11 @@ public class Bean {
         this.collection = collection;
     }
 
-    public String getString() {
-        return string;
+    public String getaString() {
+        return aString;
     }
 
-    public void setString(String string) {
-        this.string = string;
+    public void setaString(String aString) {
+        this.aString = aString;
     }
 }
