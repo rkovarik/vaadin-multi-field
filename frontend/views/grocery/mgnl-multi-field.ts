@@ -9,37 +9,41 @@ import {Button} from "@vaadin/button";
 import {TextField} from "@vaadin/text-field";
 import {VerticalLayout} from "@vaadin/vertical-layout";
 import {HorizontalLayout} from "@vaadin/horizontal-layout";
-import {CustomField} from "@vaadin/custom-field";
 import {AbstractModel, Binder, FieldStrategy, ModelConstructor} from "@hilla/form";
-import {CounterEndpoint} from "Frontend/generated/endpoints";
 
 @customElement('mgnl-multi-field')
-export class GroceryView extends LitElement {
+class GroceryView extends LitElement {
 
-    @property({ type: String }) label = '';
-    @property({ type: String }) value = [2];
+    @property({type: String}) label = '';
+    @property({type: [String]}) value = [];
 
     // custom properties that do not work with the default Binder
-    @property({ type: Boolean }) mandatory = false;
-    @property({ type: Boolean }) hasError = false;
-    @property({ type: String }) error = '';
+    @property({type: Boolean}) mandatory = false;
+    @property({type: Boolean}) hasError = false;
+    @property({type: String}) error = '';
 
     private field: Node = new TextField();
 
-    render() {
-        let verticalLayout = new VerticalLayout();
-        let button = new Button();
-        this.createFieldContainer(button);
-        button.innerText = "+"
-        button.onclick = () => this.createFieldContainer(button);
-        verticalLayout.append(button)
+    // render() {
+    //     return html`${this.error}`;
+    // }
 
-        let customField = new CustomField();
-        customField.append(verticalLayout)
-        return customField;
+    render() {
+        // console.error("dewa" + this.value.values().next())
+        let verticalLayout = new VerticalLayout();
+        let addButton = new Button();
+        verticalLayout.append(addButton)
+        // this.createFieldContainer(addButton, this.value)
+        for (const element of this.value) {
+            this.createFieldContainer(addButton, element)
+        }
+        // this.value.forEach(value => this.createFieldContainer(addButton, value));
+        addButton.innerText = "+"
+        addButton.onclick = () => this.createFieldContainer(addButton, undefined);
+        return verticalLayout;
     }
 
-    private createFieldContainer(addButton: Button) {
+    private createFieldContainer(addButton: Button, value: string | undefined) {
         let horizontalLayout = new HorizontalLayout();
         let newField = this.field.cloneNode();
         horizontalLayout.append(newField)
@@ -48,7 +52,9 @@ export class GroceryView extends LitElement {
         horizontalLayout.append(removeButton)
         addButton.before(horizontalLayout)
         if (newField instanceof TextField) {
+            if (value) newField.value = value;
             newField.focus();
+            // this.value.push(newField);
         }
     }
 
@@ -62,8 +68,11 @@ export class GroceryView extends LitElement {
     }
 }
 
+export default GroceryView;
+
 export class MyTextFieldStrategy implements FieldStrategy {
-    constructor(public element: GroceryView) {}
+    constructor(public element: GroceryView) {
+    }
 
     set required(required: boolean) {
         this.element.mandatory = required;
@@ -79,19 +88,15 @@ export class MyTextFieldStrategy implements FieldStrategy {
 
     readonly model: AbstractModel<any> | undefined;
     value: any;
-    // ...
 }
 
 export class MyBinder<T, M extends AbstractModel<T>> extends Binder<T, M> {
     constructor(context: Element, model: ModelConstructor<T, M>) {
-        super(context, model, {
-            onSubmit: value => CounterEndpoint.submit(value) //TODO extract
-        });
+        super(context, model);
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     getFieldStrategy(element: any): FieldStrategy {
-        console.warn("dewa")
         if (element.localName === 'mgnl-multi-field') {
             return new MyTextFieldStrategy(element);
         }
