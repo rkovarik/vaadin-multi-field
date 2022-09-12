@@ -14,14 +14,14 @@ export class GroceryView extends View {
 
     render() {
         return html`
-            <div>
-                <mgnl-multi-field .value="1" ...="${field(this.binder.model.aString)}">
+            <vaadin-form-layout>
+                <mgnl-multi-field label="Multi" ...="${field(this.binder.model.aString)}">
                     <vaadin-text-field></vaadin-text-field>
                 </mgnl-multi-field>
                 <vaadin-button @click="${() => {
                     return this.binder.submitTo(CounterEndpoint.submit);
                 }}"></vaadin-button>
-            </div>`;
+            </vaadin-form-layout>`;
     }
 
 

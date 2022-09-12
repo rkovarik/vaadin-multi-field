@@ -13,7 +13,7 @@ public class Bean {
     private Collection<String> collection = Arrays.asList("1", "2");
 
     @NotEmpty
-    private String aString = "1\t2";
+    private String aString = "\t1\t2\t";
 
     public Collection<String> getCollection() {
         return collection;

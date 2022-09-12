@@ -21,35 +21,48 @@ import {
 @customElement('mgnl-multi-field')
 class GroceryView extends LitElement {
 
-    @property() value = "1";
+    @property() value = '';
 
     @property({type: String}) label = '';
     @property({type: String}) private _value = '';
 
     // custom properties that do not work with the default Binder
-    @property({type: Boolean}) mandatory = false;
-    @property({type: Boolean}) hasError = false;
+    @property({type: Boolean}) required = false;
     @property({type: String}) errorMessage = '';
 
+    @property() separator = "\t";
+
     render() {
+        this.inputs = new Set(this.value ? this.value.split(this.separator)
+            .map(value => {
+                let field = new TextField();
+                field.setAttribute("value", value)
+                return field
+            }) : []);
+        let required;
+        if (this.required) {
+            required = html`<span ?hidden part=\"required-indicator\" aria-hidden=\"true\" on-click=\"focus\" ?visible=\"true\">*</span>`
+        }
         return html`
             <div class="vaadin-field-container">
                 <div part="label">
-                    <slot name="label"></slot>
-                    <span part="required-indicator" aria-hidden="true" on-click="focus"></span>
+                    <slot name="label">${(this.label)}</slot>
+                    ${required}
                 </div>
 
-                ${repeat(this.value ? this.value.split("\t") : [], value => html`
+                ${repeat(this.inputs, input => html`
                     <vaadin-horizontal-layout>
-                        <vaadin-text-field value="${value}"></vaadin-text-field>
+                        ${input}
+<!--                        <vaadin-text-field value="${input}"></vaadin-text-field>-->
                         <vaadin-button @click="${() => {
-                            this.value = this.value.replace('1\t2', '');
+                            this.inputs.delete(input)
+                            console.warn(this.inputs)
                         }}">x
                         </vaadin-button>
                     </vaadin-horizontal-layout>
                 `)}
 
-                <vaadin-button @click="${() => this.inputs.add(new TextField())}">+</vaadin-button>
+                <vaadin-button @click="${() => this.value += this.separator}">+</vaadin-button>
 
                 <div part="helper-text">
                     <slot name="helper"></slot>
