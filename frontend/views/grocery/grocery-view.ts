@@ -15,7 +15,7 @@ export class GroceryView extends View {
     render() {
         return html`
             <div>
-                <mgnl-multi-field ...="${field(this.binder.model.aString)}">
+                <mgnl-multi-field .value="1" ...="${field(this.binder.model.aString)}">
                     <vaadin-text-field></vaadin-text-field>
                 </mgnl-multi-field>
                 <vaadin-button @click="${() => {

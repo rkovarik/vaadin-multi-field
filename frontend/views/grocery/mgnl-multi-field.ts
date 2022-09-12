@@ -1,5 +1,6 @@
 import {html, LitElement} from 'lit';
 import {customElement, property, state} from 'lit/decorators.js';
+import {repeat} from 'lit/directives/repeat.js';
 import '@vaadin/custom-field';
 import '@vaadin/text-field'
 import '@vaadin/vertical-layout'
@@ -10,43 +11,17 @@ import {TextField} from "@vaadin/text-field";
 import {VerticalLayout} from "@vaadin/vertical-layout";
 import {HorizontalLayout} from "@vaadin/horizontal-layout";
 import {
-    AbstractFieldStrategy,
     AbstractModel,
     Binder,
     FieldStrategy,
     ModelConstructor,
     VaadinFieldStrategy
 } from "@hilla/form";
-import {version} from "vite";
 
 @customElement('mgnl-multi-field')
 class GroceryView extends LitElement {
 
-    get value(): string {
-        let values = ''
-        this.inputs.forEach(input => {
-            let value = input instanceof TextField ? input.value : input.getAttribute('value');
-            values += value + '\t';
-        })
-        return values;
-        // return this.inputs;
-    }
-
-    set value(values: string) {
-        this.inputs.clear();
-        // if (values != undefined) {
-        values
-            .split('\t')
-            .forEach(value1 => {
-                let field = new TextField();
-                field.setAttribute("value", value1);
-                this.inputs.add(field);
-                return field;
-            });
-        // }
-    }
-
-    @state() inputs: Set<Element> = new Set();
+    @property() value = "1";
 
     @property({type: String}) label = '';
     @property({type: String}) private _value = '';
@@ -54,13 +29,43 @@ class GroceryView extends LitElement {
     // custom properties that do not work with the default Binder
     @property({type: Boolean}) mandatory = false;
     @property({type: Boolean}) hasError = false;
-    @property({type: String}) errorMessage = 'dwa';
-
-    // constructor(version: any) {
-    //     super();
-    // }
+    @property({type: String}) errorMessage = '';
 
     render() {
+        return html`
+            <div class="vaadin-field-container">
+                <div part="label">
+                    <slot name="label"></slot>
+                    <span part="required-indicator" aria-hidden="true" on-click="focus"></span>
+                </div>
+
+                ${repeat(this.value ? this.value.split("\t") : [], value => html`
+                    <vaadin-horizontal-layout>
+                        <vaadin-text-field value="${value}"></vaadin-text-field>
+                        <vaadin-button @click="${() => {
+                            this.value = this.value.replace('1\t2', '');
+                        }}">x
+                        </vaadin-button>
+                    </vaadin-horizontal-layout>
+                `)}
+
+                <vaadin-button @click="${() => this.inputs.add(new TextField())}">+</vaadin-button>
+
+                <div part="helper-text">
+                    <slot name="helper"></slot>
+                </div>
+
+                <div part="error-message">
+                    <slot name="error-message"></slot>
+                    ${this.errorMessage}
+                </div>
+            </div>
+        `;
+    }
+
+    @state() inputs: Set<Element> = new Set();
+
+    render2() {
         let verticalLayout = new VerticalLayout(); //document.createElement("div"); //
         verticalLayout.className = "vaadin-field-container"
 
