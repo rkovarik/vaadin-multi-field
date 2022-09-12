@@ -18,13 +18,19 @@ class GroceryView extends LitElement {
         let value = ''
         this.inputs.forEach(input => value += input.value + '\t')
         return value;
-            // .filter(value1 => value1 instanceof TextField)
-            // .map(field => field.value)
-            // .join('\t');
     }
 
-    set value(value: string) {
-        this._value = value;
+    set value(values: string) {
+        this.inputs.clear();
+        // if (values != undefined) {
+            values.split('\t')
+                .map(value1 => {
+                    let field = new TextField();
+                    field.setAttribute("value", value1);
+                    this.inputs.add(field);
+                    return field;
+                });
+        // }
     }
 
     @property({type: String}) label = '';
@@ -43,20 +49,25 @@ class GroceryView extends LitElement {
         let verticalLayout = new VerticalLayout();
         let addButton = new Button();
         verticalLayout.append(addButton)
-        if (this._value) {
-            for (const element of this._value.split('\t')) {
-                this.createFieldContainer(addButton, element)
-            }
-        }
+        // if (this._value) {
+        //     for (const element of this._value.split('\t')) {
+        //         this.createFieldContainer(addButton, element)
+        //     }
+        // }
+        this.inputs.forEach(element => this.createFieldContainer(addButton, element))
         addButton.innerText = "+"
-        addButton.onclick = () => this.createFieldContainer(addButton, undefined);
+        addButton.onclick = () => {
+            let field = new TextField();
+            this.inputs.add(field);
+            this.createFieldContainer(addButton, field);
+        };
         return verticalLayout;
     }
 
-    private createFieldContainer(addButton: Button, value: string | undefined) {
+    private createFieldContainer(addButton: Button, newField: TextField) {
         let horizontalLayout = new HorizontalLayout();
-        let newField = new TextField(); //this.field.cloneNode();
-        this.inputs.add(newField);
+        // let newField = new TextField(); //this.field.cloneNode();
+        // this.inputs.add(newField);
         horizontalLayout.append(newField)
         let removeButton = this.createButton();
         removeButton.onclick = () => {
@@ -67,10 +78,7 @@ class GroceryView extends LitElement {
         }
         horizontalLayout.append(removeButton)
         addButton.before(horizontalLayout)
-        if (newField instanceof TextField) {
-            if (value) newField.value = value;
-            newField.focus();
-        }
+        newField.focus();
     }
 
     private createButton() {
@@ -98,6 +106,7 @@ export class MyTextFieldStrategy extends AbstractFieldStrategy<string> { //imple
     set invalid(invalid: boolean) {
         // this.element.hasError = invalid;
     }
+
     // get value() {
     //     return this.element.value;
     // }
