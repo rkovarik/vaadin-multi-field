@@ -15,7 +15,7 @@ export class GroceryView extends View {
     render() {
         return html`
             <vaadin-form-layout>
-                <mgnl-multi-field label="Multi" ...="${field(this.binder.model.aString)}">
+                <mgnl-multi-field label="Multi" value="\t1\t" ...="${field(this.binder.model.aString)}">
                     <vaadin-text-field></vaadin-text-field>
                 </mgnl-multi-field>
                 <vaadin-button @click="${() => {

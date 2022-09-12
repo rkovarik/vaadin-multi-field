@@ -21,8 +21,6 @@ import {
 @customElement('mgnl-multi-field')
 class GroceryView extends LitElement {
 
-    @property() value = '';
-
     @property({type: String}) label = '';
     @property({type: String}) private _value = '';
 
@@ -32,16 +30,28 @@ class GroceryView extends LitElement {
 
     @property() separator = "\t";
 
+    @state() inputs: Set<Element> = new Set<Element>();
+
+    get value() {
+        let values = '';
+        this.inputs.forEach(input => values += input.getAttribute("value"))
+        return values;
+    }
+
+    set value(values) {
+        this.inputs.clear()
+        values.split(this.separator).forEach(value => {
+            let field = new TextField();
+            field.setAttribute("value", value);
+            this.inputs.add(field);
+        })
+    }
+
     render() {
-        this.inputs = new Set(this.value ? this.value.split(this.separator)
-            .map(value => {
-                let field = new TextField();
-                field.setAttribute("value", value)
-                return field
-            }) : []);
         let required;
         if (this.required) {
-            required = html`<span ?hidden part=\"required-indicator\" aria-hidden=\"true\" on-click=\"focus\" ?visible=\"true\">*</span>`
+            required = html`<span ?hidden part=\"required-indicator\" aria-hidden=\"true\" on-click=\"focus\"
+                                  ?visible=\"true\">*</span>`
         }
         return html`
             <div class="vaadin-field-container">
@@ -53,16 +63,16 @@ class GroceryView extends LitElement {
                 ${repeat(this.inputs, input => html`
                     <vaadin-horizontal-layout>
                         ${input}
-<!--                        <vaadin-text-field value="${input}"></vaadin-text-field>-->
-                        <vaadin-button @click="${() => {
+                            <!--                        <vaadin-text-field value="${input}"></vaadin-text-field>-->
+                        <vaadin-button @click="${(ev: CustomEvent) => {
+                            console.warn(this.value)
                             this.inputs.delete(input)
-                            console.warn(this.inputs)
                         }}">x
                         </vaadin-button>
                     </vaadin-horizontal-layout>
                 `)}
 
-                <vaadin-button @click="${() => this.value += this.separator}">+</vaadin-button>
+                <vaadin-button @click="${this.addField}">+</vaadin-button>
 
                 <div part="helper-text">
                     <slot name="helper"></slot>
@@ -76,10 +86,12 @@ class GroceryView extends LitElement {
         `;
     }
 
-    @state() inputs: Set<Element> = new Set();
+    addField(e: CustomEvent) {
+        this.inputs.add(new TextField());
+    }
 
     render2() {
-        let verticalLayout = new VerticalLayout(); //document.createElement("div"); //
+        let verticalLayout = new VerticalLayout();
         verticalLayout.className = "vaadin-field-container"
 
         let addButton = new Button();
@@ -125,9 +137,6 @@ class GroceryView extends LitElement {
         button.innerText = "remove"
         return button;
     }
-
-    public version = '1.0';
-
 }
 
 export default GroceryView;
