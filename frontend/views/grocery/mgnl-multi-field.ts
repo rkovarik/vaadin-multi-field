@@ -15,23 +15,30 @@ import {AbstractFieldStrategy, AbstractModel, Binder, FieldStrategy, ModelConstr
 class GroceryView extends LitElement {
 
     get value(): string {
-        let value = ''
-        this.inputs.forEach(input => value += input.value + '\t')
-        return value;
+        let values = ''
+        this.inputs.forEach(input => {
+            let value = input instanceof TextField ? input.value : input.getAttribute('value');
+            values += value + '\t';
+        })
+        return values;
+        // return this.inputs;
     }
 
     set value(values: string) {
         this.inputs.clear();
         // if (values != undefined) {
-            values.split('\t')
-                .map(value1 => {
-                    let field = new TextField();
-                    field.setAttribute("value", value1);
-                    this.inputs.add(field);
-                    return field;
-                });
+        values
+            .split('\t')
+            .forEach(value1 => {
+                let field = new TextField();
+                field.setAttribute("value", value1);
+                this.inputs.add(field);
+                return field;
+            });
         // }
     }
+
+    @state() inputs: Set<Element> = new Set();
 
     @property({type: String}) label = '';
     @property({type: String}) private _value = '';
@@ -39,46 +46,45 @@ class GroceryView extends LitElement {
     // custom properties that do not work with the default Binder
     @property({type: Boolean}) mandatory = false;
     @property({type: Boolean}) hasError = false;
-    @property({type: String}) error = '';
-
-    @state() inputs: Set<TextField> = new Set<TextField>();
-
-    // private field: Node = new TextField();
+    @property({type: String}) errorMessage = 'dwa';
 
     render() {
-        let verticalLayout = new VerticalLayout();
+        let verticalLayout = new VerticalLayout(); //document.createElement("div"); //
+        verticalLayout.className = "vaadin-field-container"
+
         let addButton = new Button();
         verticalLayout.append(addButton)
-        // if (this._value) {
-        //     for (const element of this._value.split('\t')) {
-        //         this.createFieldContainer(addButton, element)
-        //     }
-        // }
         this.inputs.forEach(element => this.createFieldContainer(addButton, element))
         addButton.innerText = "+"
         addButton.onclick = () => {
             let field = new TextField();
+            field.required = true;
             this.inputs.add(field);
             this.createFieldContainer(addButton, field);
         };
+
+        let slotElement = document.createElement("slot");
+        slotElement.name = "error-message";
+        slotElement.innerText = this.errorMessage;
+        let div = document.createElement("div")
+        div.append(slotElement);
+        div.setAttribute("part", "error-message");
+        verticalLayout.append(div);
+
         return verticalLayout;
     }
 
-    private createFieldContainer(addButton: Button, newField: TextField) {
+    private createFieldContainer(addButton: Button, newField: Element) {
         let horizontalLayout = new HorizontalLayout();
-        // let newField = new TextField(); //this.field.cloneNode();
-        // this.inputs.add(newField);
         horizontalLayout.append(newField)
         let removeButton = this.createButton();
         removeButton.onclick = () => {
-            horizontalLayout.remove();
-            // value?.replace(value, '');
-            // this._value += value
             this.inputs.delete(newField);
+            horizontalLayout.remove();
         }
         horizontalLayout.append(removeButton)
         addButton.before(horizontalLayout)
-        newField.focus();
+        newField.setAttribute('focused', 'true'); //tODO
     }
 
     private createButton() {
@@ -93,14 +99,20 @@ class GroceryView extends LitElement {
 
 export default GroceryView;
 
-export class MyTextFieldStrategy extends AbstractFieldStrategy<string> { //implements FieldStrategy
-    // constructor(public element: GroceryView) {
-    //     super();
-    //     console.error("dewa")
+export class MultiFieldStrategy extends AbstractFieldStrategy<string> { //implements FieldStrategy<string> {
+
+    // constructor(element: any) {
+    //     super(element, undefined);
     // }
-    //
+
+    // model?: AbstractModel<any> | undefined;
+    // required: boolean;
+    // invalid: boolean;
+    // errorMessage: string;
+    // value: any;
+
     set required(required: boolean) {
-        // this.element.mandatory = required;
+        this.element.required = required;
     }
 
     set invalid(invalid: boolean) {
@@ -108,22 +120,30 @@ export class MyTextFieldStrategy extends AbstractFieldStrategy<string> { //imple
     }
 
     // get value() {
-    //     return this.element.value;
+    //     if (this.element instanceof GroceryView) {
+    //         console.error("get" + this.element.value)
+    //         return this.value;
+    //     }
+    //     return '';
     // }
-    //
+
     // set value(value: string) {
-    //     this.element.value = value;
+    //     if (this.element instanceof GroceryView) {
+    //         console.error("dewa" + value)
+    //         this.element.value = value;
+    //     }
     // }
 
     //
-    // set errorMessage(errorMessage: string) {
-    //     this.element.error = errorMessage;
-    // }
+    set errorMessage(errorMessage: string) {
+        this.element.errorMessage = errorMessage;
+    }
     //
     // readonly model: AbstractModel<any> | undefined;
 }
 
-export class MyBinder<T, M extends AbstractModel<T>> extends Binder<T, M> {
+export class MultiFieldBinder<T, M extends AbstractModel<T>> extends Binder<T, M> {
+
     constructor(context: Element, model: ModelConstructor<T, M>) {
         super(context, model);
     }
@@ -131,7 +151,7 @@ export class MyBinder<T, M extends AbstractModel<T>> extends Binder<T, M> {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     getFieldStrategy(element: any): FieldStrategy {
         if (element.localName === 'mgnl-multi-field') {
-            return new MyTextFieldStrategy(element);
+            return new MultiFieldStrategy(element);
         }
         return super.getFieldStrategy(element);
     }

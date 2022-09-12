@@ -3,10 +3,16 @@ package com.example.application.bean;
 import java.util.Arrays;
 import java.util.Collection;
 
+import javax.annotation.RegEx;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+
 
 public class Bean {
 
     private Collection<String> collection = Arrays.asList("1", "2");
+
+    @NotEmpty
     private String aString = "1\t2";
 
     public Collection<String> getCollection() {

@@ -2,24 +2,23 @@ import {html} from 'lit';
 import {customElement} from 'lit/decorators.js';
 import {View} from '../../views/view';
 import "./mgnl-multi-field";
-import {ArrayModel, Binder, field} from "@hilla/form";
-import {MyBinder} from "Frontend/views/grocery/mgnl-multi-field";
+import {Binder, field} from "@hilla/form";
 import BeanModel from "Frontend/generated/com/example/application/bean/BeanModel";
 import {CounterEndpoint} from "Frontend/generated/endpoints";
+import {MultiFieldBinder} from "Frontend/views/grocery/mgnl-multi-field";
 
 @customElement('grocery-view')
 export class GroceryView extends View {
 
-    private binder = new Binder(this, BeanModel)
+    private binder = new MultiFieldBinder(this, BeanModel)
 
     render() {
         return html`
             <div>
-                <mgnl-multi-field value="1\t2" ...="${field(this.binder.model.aString)}">
+                <mgnl-multi-field ...="${field(this.binder.model.aString)}">
                     <vaadin-text-field></vaadin-text-field>
                 </mgnl-multi-field>
                 <vaadin-button @click="${() => {
-                    // console.error(this.binder.value)
                     return this.binder.submitTo(CounterEndpoint.submit);
                 }}"></vaadin-button>
             </div>`;
