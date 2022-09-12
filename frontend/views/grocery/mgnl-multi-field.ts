@@ -9,7 +9,15 @@ import {Button} from "@vaadin/button";
 import {TextField} from "@vaadin/text-field";
 import {VerticalLayout} from "@vaadin/vertical-layout";
 import {HorizontalLayout} from "@vaadin/horizontal-layout";
-import {AbstractFieldStrategy, AbstractModel, Binder, FieldStrategy, ModelConstructor} from "@hilla/form";
+import {
+    AbstractFieldStrategy,
+    AbstractModel,
+    Binder,
+    FieldStrategy,
+    ModelConstructor,
+    VaadinFieldStrategy
+} from "@hilla/form";
+import {version} from "vite";
 
 @customElement('mgnl-multi-field')
 class GroceryView extends LitElement {
@@ -47,6 +55,10 @@ class GroceryView extends LitElement {
     @property({type: Boolean}) mandatory = false;
     @property({type: Boolean}) hasError = false;
     @property({type: String}) errorMessage = 'dwa';
+
+    // constructor(version: any) {
+    //     super();
+    // }
 
     render() {
         let verticalLayout = new VerticalLayout(); //document.createElement("div"); //
@@ -95,51 +107,15 @@ class GroceryView extends LitElement {
         button.innerText = "remove"
         return button;
     }
+
+    public version = '1.0';
+
 }
 
 export default GroceryView;
 
-export class MultiFieldStrategy extends AbstractFieldStrategy<string> { //implements FieldStrategy<string> {
+class MultiFieldStrategy extends VaadinFieldStrategy {
 
-    // constructor(element: any) {
-    //     super(element, undefined);
-    // }
-
-    // model?: AbstractModel<any> | undefined;
-    // required: boolean;
-    // invalid: boolean;
-    // errorMessage: string;
-    // value: any;
-
-    set required(required: boolean) {
-        this.element.required = required;
-    }
-
-    set invalid(invalid: boolean) {
-        // this.element.hasError = invalid;
-    }
-
-    // get value() {
-    //     if (this.element instanceof GroceryView) {
-    //         console.error("get" + this.element.value)
-    //         return this.value;
-    //     }
-    //     return '';
-    // }
-
-    // set value(value: string) {
-    //     if (this.element instanceof GroceryView) {
-    //         console.error("dewa" + value)
-    //         this.element.value = value;
-    //     }
-    // }
-
-    //
-    set errorMessage(errorMessage: string) {
-        this.element.errorMessage = errorMessage;
-    }
-    //
-    // readonly model: AbstractModel<any> | undefined;
 }
 
 export class MultiFieldBinder<T, M extends AbstractModel<T>> extends Binder<T, M> {
@@ -150,10 +126,12 @@ export class MultiFieldBinder<T, M extends AbstractModel<T>> extends Binder<T, M
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     getFieldStrategy(element: any): FieldStrategy {
+        // console.error(element.constructor.version)
         if (element.localName === 'mgnl-multi-field') {
-            return new MultiFieldStrategy(element);
+            return new VaadinFieldStrategy(element);
         }
         return super.getFieldStrategy(element);
     }
-
 }
+
+
