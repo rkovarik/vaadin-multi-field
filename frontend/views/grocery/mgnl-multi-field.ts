@@ -22,7 +22,7 @@ import {
 class GroceryView extends LitElement {
 
     @property({type: String}) label = '';
-    @property({type: String}) private _value = '';
+    // @property({type: String}) private _value = '';
 
     // custom properties that do not work with the default Binder
     @property({type: Boolean}) required = false;
@@ -30,20 +30,31 @@ class GroceryView extends LitElement {
 
     @property() separator = "\t";
 
-    @state() inputs: Set<Element> = new Set<Element>();
+    @state() private inputs: Set<HTMLElement> = new Set();
 
     get value() {
         let values = '';
-        this.inputs.forEach(input => values += input.getAttribute("value"))
+        this.inputs.forEach(input => {
+            let value = input instanceof TextField ? input.value : input.getAttribute("value");
+            return values += value + "\t";
+        })
         return values;
     }
 
     set value(values) {
         this.inputs.clear()
         values.split(this.separator).forEach(value => {
-            let field = new TextField();
-            field.setAttribute("value", value);
-            this.inputs.add(field);
+            // console.error(this.getRootNode({ composed: true}))
+            let field: any = this.getRootNode().lastChild?.childNodes.item(1).childNodes.item(1).cloneNode(); //new TextField(); TODO
+            if (field instanceof HTMLElement) {
+                if (field instanceof TextField) {
+                    field.value = value;
+                } else {
+                    field.setAttribute("value", value);
+                }
+                this.inputs.add(field);
+                field.focus()
+            }
         })
     }
 
@@ -59,19 +70,21 @@ class GroceryView extends LitElement {
                     <slot name="label">${(this.label)}</slot>
                     ${required}
                 </div>
-
-                ${repeat(this.inputs, input => html`
-                    <vaadin-horizontal-layout>
-                        ${input}
-                            <!--                        <vaadin-text-field value="${input}"></vaadin-text-field>-->
-                        <vaadin-button @click="${(ev: CustomEvent) => {
-                            console.warn(this.value)
-                            this.inputs.delete(input)
-                        }}">x
-                        </vaadin-button>
-                    </vaadin-horizontal-layout>
-                `)}
-
+                <!--                <slot class="field"></slot>-->
+                <vaadin-vertical-layout>
+                    ${repeat(this.inputs, input => html`
+                        <vaadin-horizontal-layout>
+                            ${input}
+                                <!--                            <vaadin-text-field value="${input.getAttribute("value")}
+                                "></vaadin-text-field>-->
+                            <vaadin-button @click="${(_ev: CustomEvent) => {
+                                console.warn(this.value)
+                                this.inputs.delete(input)
+                            }}">x
+                            </vaadin-button>
+                        </vaadin-horizontal-layout>
+                    `)}
+                </vaadin-vertical-layout>
                 <vaadin-button @click="${this.addField}">+</vaadin-button>
 
                 <div part="helper-text">
@@ -88,54 +101,6 @@ class GroceryView extends LitElement {
 
     addField(e: CustomEvent) {
         this.inputs.add(new TextField());
-    }
-
-    render2() {
-        let verticalLayout = new VerticalLayout();
-        verticalLayout.className = "vaadin-field-container"
-
-        let addButton = new Button();
-        verticalLayout.append(addButton)
-        this.inputs.forEach(element => this.createFieldContainer(addButton, element))
-        addButton.innerText = "+"
-        addButton.onclick = () => {
-            let field = new TextField();
-            field.required = true;
-            this.inputs.add(field);
-            this.createFieldContainer(addButton, field);
-        };
-
-        let slotElement = document.createElement("slot");
-        slotElement.name = "error-message";
-        slotElement.innerText = this.errorMessage;
-        let div = document.createElement("div")
-        div.append(slotElement);
-        div.setAttribute("part", "error-message");
-        verticalLayout.append(div);
-
-        return verticalLayout;
-    }
-
-    private createFieldContainer(addButton: Button, newField: Element) {
-        let horizontalLayout = new HorizontalLayout();
-        horizontalLayout.append(newField)
-        let removeButton = this.createButton();
-        removeButton.onclick = () => {
-            this.inputs.delete(newField);
-            horizontalLayout.remove();
-        }
-        horizontalLayout.append(removeButton)
-        addButton.before(horizontalLayout)
-        newField.setAttribute('focused', 'true'); //tODO
-    }
-
-    private createButton() {
-        let button = new Button();
-        let icon = new Icon();
-        icon.icon = "vaadin:trash"
-        button.append(icon)
-        button.innerText = "remove"
-        return button;
     }
 }
 
