@@ -22,7 +22,6 @@ import {
 class GroceryView extends LitElement {
 
     @property({type: String}) label = '';
-    // @property({type: String}) private _value = '';
 
     // custom properties that do not work with the default Binder
     @property({type: Boolean}) required = false;
@@ -36,7 +35,7 @@ class GroceryView extends LitElement {
         let values = '';
         this.inputs.forEach(input => {
             let value = input instanceof TextField ? input.value : input.getAttribute("value");
-            return values += value + "\t";
+            values += value + "\t";
         })
         return values;
     }
@@ -78,7 +77,9 @@ class GroceryView extends LitElement {
                                 <!--                            <vaadin-text-field value="${input.getAttribute("value")}
                                 "></vaadin-text-field>-->
                             <vaadin-button @click="${(_ev: CustomEvent) => {
-                                console.warn(this.value)
+                                // if (_ev.target  instanceof Button) {
+                                //     console.error(_ev.target.getElementsByTagName("vaadin-horizontal-layout").item(0))
+                                // }
                                 this.inputs.delete(input)
                             }}">x
                             </vaadin-button>
