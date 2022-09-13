@@ -2,6 +2,7 @@ import {html} from 'lit';
 import {customElement} from 'lit/decorators.js';
 import {View} from '../../views/view';
 import "./mgnl-multi-field";
+import "@vaadin/checkbox"
 import {Binder, field} from "@hilla/form";
 import BeanModel from "Frontend/generated/com/example/application/bean/BeanModel";
 import {CounterEndpoint} from "Frontend/generated/endpoints";

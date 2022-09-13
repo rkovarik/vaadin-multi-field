@@ -17,6 +17,8 @@ import {
     ModelConstructor,
     VaadinFieldStrategy
 } from "@hilla/form";
+import {Checkbox} from "@vaadin/checkbox";
+import {ComboBox} from "@vaadin/combo-box";
 
 @customElement('mgnl-multi-field')
 class GroceryView extends LitElement {
@@ -29,32 +31,38 @@ class GroceryView extends LitElement {
 
     @property() separator = "\t";
 
-    @state() private inputs: Set<HTMLElement> = new Set();
+    @state() private inputs: Set<Element | null> = new Set();
 
     get value() {
         let values = '';
         this.inputs.forEach(input => {
-            let value = input instanceof TextField ? input.value : input.getAttribute("value");
+            // console.error(input.getElementsByTagName("input").item(0)?.value)
+            let value = input?.getElementsByTagName("input").item(0)?.value;
             values += value + "\t";
         })
         return values;
     }
 
     set value(values) {
-        this.inputs.clear()
+        let inputs = new Set<HTMLElement>(); //.clear()
         values.split(this.separator).forEach(value => {
-            // console.error(this.getRootNode({ composed: true}))
-            let field: any = this.getRootNode().lastChild?.childNodes.item(1).childNodes.item(1).cloneNode(); //new TextField(); TODO
+            let field: Node | undefined = new TextField(); //this.getElementsByClassName("field").item(0)?.cloneNode();
             if (field instanceof HTMLElement) {
-                if (field instanceof TextField) {
-                    field.value = value;
-                } else {
-                    field.setAttribute("value", value);
-                }
-                this.inputs.add(field);
+                console.error("" + this.getElementsByClassName("field").item(0)?.children.length)
+                // if (field instanceof TextField) {
+                //     field.value = value;
+                // } else {
+                field.setAttribute("value", value);
+                // }
+                inputs.add(field);
                 field.focus()
             }
         })
+        this.inputs = inputs;
+    }
+
+    protected createRenderRoot(): Element | ShadowRoot {
+        return this;
     }
 
     render() {
@@ -69,18 +77,20 @@ class GroceryView extends LitElement {
                     <slot name="label">${(this.label)}</slot>
                     ${required}
                 </div>
-                <!--                <slot class="field"></slot>-->
+                <slot class="field"></slot>
                 <vaadin-vertical-layout>
                     ${repeat(this.inputs, input => html`
                         <vaadin-horizontal-layout>
                             ${input}
-                                <!--                            <vaadin-text-field value="${input.getAttribute("value")}
-                                "></vaadin-text-field>-->
                             <vaadin-button @click="${(_ev: CustomEvent) => {
-                                // if (_ev.target  instanceof Button) {
-                                //     console.error(_ev.target.getElementsByTagName("vaadin-horizontal-layout").item(0))
-                                // }
-                                this.inputs.delete(input)
+                                if (_ev.target instanceof Node) {
+                                    // let parentElement = _ev.target?.parentElement;
+                                    // if (parentElement) {
+                                    //     console.error(this.inputs)
+                                        this.inputs.delete(input) //parentElement?.children.item(0)
+                                        this.inputs = new Set(this.inputs)
+                                    // }
+                                }
                             }}">x
                             </vaadin-button>
                         </vaadin-horizontal-layout>
@@ -101,7 +111,8 @@ class GroceryView extends LitElement {
     }
 
     addField(e: CustomEvent) {
-        this.inputs.add(new TextField());
+        this.value = this.value += this.separator;
+        // this.inputs.add(new TextField());
     }
 }
 
