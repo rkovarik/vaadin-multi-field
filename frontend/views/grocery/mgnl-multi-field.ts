@@ -24,19 +24,18 @@ import {ComboBox} from "@vaadin/combo-box";
 class GroceryView extends LitElement {
 
     @property({type: String}) label = '';
-
-    // custom properties that do not work with the default Binder
+    @property({type: String}) name = '';
     @property({type: Boolean}) required = false;
     @property({type: String}) errorMessage = '';
 
     @property() separator = "\t";
 
-    @state() private inputs: Set<Element | null> = new Set();
+    @state() private fields: Set<Element | null> = new Set();
 
     get value() {
         let values = '';
-        this.inputs.forEach(input => {
-            // console.error(input.getElementsByTagName("input").item(0)?.value)
+        this.fields.forEach(input => {
+            // console.error(input?.localName)
             let value = input?.getElementsByTagName("input").item(0)?.value;
             values += value + "\t";
         })
@@ -44,21 +43,17 @@ class GroceryView extends LitElement {
     }
 
     set value(values) {
-        let inputs = new Set<HTMLElement>(); //.clear()
+        let inputs = new Set<HTMLElement>();
         values.split(this.separator).forEach(value => {
-            let field: Node | undefined = new TextField(); //this.getElementsByClassName("field").item(0)?.cloneNode();
+            let field: Node | undefined = this.children.item(0)?.cloneNode();
+            // console.error("" + this.children.item(0)?.localName)
             if (field instanceof HTMLElement) {
-                console.error("" + this.getElementsByClassName("field").item(0)?.children.length)
-                // if (field instanceof TextField) {
-                //     field.value = value;
-                // } else {
                 field.setAttribute("value", value);
-                // }
                 inputs.add(field);
                 field.focus()
             }
         })
-        this.inputs = inputs;
+        this.fields = inputs;
     }
 
     protected createRenderRoot(): Element | ShadowRoot {
@@ -79,12 +74,12 @@ class GroceryView extends LitElement {
                 </div>
                 <slot class="field" style="display='none'"></slot>
                 <vaadin-vertical-layout>
-                    ${repeat(this.inputs, input => html`
+                    ${repeat(this.fields, input => html`
                         <vaadin-horizontal-layout>
                             ${input}
                             <vaadin-button @click="${(_ev: CustomEvent) => {
-                                this.inputs.delete(input)
-                                this.inputs = new Set(this.inputs)
+                                this.fields.delete(input)
+                                this.fields = new Set(this.fields)
                             }}">x
                             </vaadin-button>
                         </vaadin-horizontal-layout>
@@ -106,7 +101,7 @@ class GroceryView extends LitElement {
 
     addField(_e: CustomEvent) {
         // this.value = this.value + this.separator;
-        this.inputs = new Set(this.inputs.add(new TextField()));
+        this.fields = new Set(this.fields.add(new TextField()));
     }
 }
 
