@@ -24,7 +24,7 @@ class MultiField extends LitElement {
     @property() separator = "\t"; //TODO remove?
 
     // @property( {type: [String]}) _value = [];
-    @state() private fields: Set<HTMLElement> = new Set();
+    @state() private fields: HTMLElement[] = [];
 
     get value() {
         let values: string[] = [];
@@ -45,7 +45,7 @@ class MultiField extends LitElement {
     }
 
     set value(values) {
-        let inputs = new Set<HTMLElement>();
+        let inputs = [];
         let fieldTemplate = this.children.item(0);
         fieldTemplate?.removeAttribute("hidden")
         if (values) {
@@ -55,7 +55,7 @@ class MultiField extends LitElement {
                 // console.error("" + this.children.item(0)?.localName)
                 if (field instanceof HTMLElement) {
                     field.setAttribute("value", element);
-                    inputs.add(field);
+                    inputs.push(field);
                     field.focus()
                 }
             }
@@ -81,22 +81,7 @@ class MultiField extends LitElement {
                 </div>
                 <!--                <slot class="field"></slot>-->
                 <vaadin-vertical-layout>
-                    ${repeat(this.fields, field => html`
-                        <vaadin-horizontal-layout>
-                            ${field}
-                            <vaadin-button @click="${(_ev: CustomEvent) => {
-                                // field.removeAttribute("value");
-                                this.fields.delete(field)
-                                this.fields = new Set(this.fields)
-                                // let value = this.value;
-                                // value.push('dwa')
-                                // this.value = []
-                                // this.value = value;
-                                dispatchEvent(new Event("change"))
-                            }}">x
-                            </vaadin-button>
-                        </vaadin-horizontal-layout>
-                    `)}
+                    ${this.renderFields()}
                 </vaadin-vertical-layout>
                 <vaadin-button @click="${(_ev: CustomEvent) => {
                     this.addField(_ev)
@@ -128,9 +113,55 @@ class MultiField extends LitElement {
                 // }
                 // dispatchEvent(new Event("change"))
                 cloneNode.setAttribute("value", '');
-                this.fields = new Set(this.fields.add(cloneNode));
+                this.fields.push(cloneNode)
+                this.reassignFields();
             }
         }
+    }
+
+    private reassignFields() {
+        let fields: any[] = []
+        this.fields.forEach(field => fields.push(field))
+        this.fields = fields;
+    }
+
+    private renderFields() {
+        const itemTemplates = [];
+        for (let i = 0; i < this.fields.length; i++) {
+            console.warn("dwa" + i)
+            let field = this.fields[i]
+            itemTemplates.push(html`
+                <vaadin-horizontal-layout>
+                    ${field}
+                    <vaadin-button @click="${(_ev: CustomEvent) => {
+                        if (i >= 0 && i < this.fields.length - 1) {
+                            [this.fields[i], this.fields[i + 1]] = [this.fields[i + 1], this.fields[i]]
+                        }
+                        this.reassignFields()
+                    }}">^
+                    </vaadin-button>
+                    <vaadin-button @click="${(_ev: CustomEvent) => {
+                        if (i > 0 && i < this.fields.length - 1) {
+                            [this.fields[i], this.fields[i - 1]] = [this.fields[i - 1], this.fields[i]]
+                        }
+                        this.reassignFields()
+                    }}">V
+                    </vaadin-button>
+                    <vaadin-button @click="${(_ev: CustomEvent) => {
+                        this.fields.splice(this.fields.indexOf(field), 1)
+                        this.reassignFields()
+// this.fields = new Set(this.fields)
+// let value = this.value;
+// value.push('dwa')
+// this.value = []
+// this.value = value;
+// dispatchEvent(new Event("change"))
+                    }}">x
+                    </vaadin-button>
+                </vaadin-horizontal-layout>
+            `);
+        }
+        return itemTemplates;
     }
 }
 
