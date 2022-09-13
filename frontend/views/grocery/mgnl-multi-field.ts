@@ -82,9 +82,10 @@ class MultiField extends LitElement {
                 <vaadin-vertical-layout>
                     ${this.renderFields()}
                 </vaadin-vertical-layout>
-                <vaadin-button @click="${(_ev: CustomEvent) => {
+                <vaadin-button style="width: 100%" @click="${(_ev: CustomEvent) => {
                     this.addField(_ev)
-                }}">+
+                }}">
+                    <vaadin-icon icon="vaadin:plus"></vaadin-icon>
                 </vaadin-button>
                 <div part="helper-text">
                     <slot name="helper"></slot>
@@ -130,14 +131,6 @@ class MultiField extends LitElement {
             itemTemplates.push(html`
                 <vaadin-horizontal-layout>
                     ${field}
-                    <vaadin-button ?disabled=${i == this.fields.length - 1} @click="${(_ev: CustomEvent) => {
-                        if (i >= 0 && i < this.fields.length - 1) {
-                            [this.fields[i], this.fields[i + 1]] = [this.fields[i + 1], this.fields[i]]
-                        }
-                        this.reassignFields()
-                    }}">
-                        <vaadin-icon icon="vaadin:angle-down"></vaadin-icon>
-                    </vaadin-button>
                     <vaadin-button ?disabled=${i == 0} @click="${(_ev: CustomEvent) => {
                         if (i > 0 && i < this.fields.length - 1) {
                             [this.fields[i], this.fields[i - 1]] = [this.fields[i - 1], this.fields[i]]
@@ -155,7 +148,15 @@ class MultiField extends LitElement {
 // this.value = []
 // this.value = value;
 // dispatchEvent(new Event("change"))
-                    }}">x
+                    }}"><vaadin-icon icon="vaadin:trash"></vaadin-icon>
+                    </vaadin-button>
+                    <vaadin-button ?disabled=${i == this.fields.length - 1} @click="${(_ev: CustomEvent) => {
+                        if (i >= 0 && i < this.fields.length - 1) {
+                            [this.fields[i], this.fields[i + 1]] = [this.fields[i + 1], this.fields[i]]
+                        }
+                        this.reassignFields()
+                    }}">
+                        <vaadin-icon icon="vaadin:angle-down"></vaadin-icon>
                     </vaadin-button>
                 </vaadin-horizontal-layout>
             `);
