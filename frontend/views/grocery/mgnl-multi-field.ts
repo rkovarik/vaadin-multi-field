@@ -1,10 +1,11 @@
-import {html, LitElement} from 'lit';
+import {html, LitElement, nothing} from 'lit';
 import {customElement, property, state} from 'lit/decorators.js';
 import {repeat} from 'lit/directives/repeat.js';
 import '@vaadin/custom-field';
 import '@vaadin/text-field'
 import '@vaadin/vertical-layout'
 import '@vaadin/icon'
+import "@vaadin/icons";
 import {
     AbstractModel,
     Binder,
@@ -20,8 +21,6 @@ class MultiField extends LitElement {
     @property({type: String}) name = '';
     @property({type: Boolean}) required = false;
     @property({type: String}) errorMessage = '';
-
-    @property() separator = "\t"; //TODO remove?
 
     // @property( {type: [String]}) _value = [];
     @state() private fields: HTMLElement[] = [];
@@ -85,8 +84,6 @@ class MultiField extends LitElement {
                 </vaadin-vertical-layout>
                 <vaadin-button @click="${(_ev: CustomEvent) => {
                     this.addField(_ev)
-                    // this.value.push("null");
-                    // this.value = Object.assign([], this.value);
                 }}">+
                 </vaadin-button>
                 <div part="helper-text">
@@ -128,24 +125,26 @@ class MultiField extends LitElement {
     private renderFields() {
         const itemTemplates = [];
         for (let i = 0; i < this.fields.length; i++) {
-            console.warn("dwa" + i)
             let field = this.fields[i]
+            let disabled = i == 0;
             itemTemplates.push(html`
                 <vaadin-horizontal-layout>
                     ${field}
-                    <vaadin-button @click="${(_ev: CustomEvent) => {
+                    <vaadin-button ?disabled=${i == this.fields.length - 1} @click="${(_ev: CustomEvent) => {
                         if (i >= 0 && i < this.fields.length - 1) {
                             [this.fields[i], this.fields[i + 1]] = [this.fields[i + 1], this.fields[i]]
                         }
                         this.reassignFields()
-                    }}">^
+                    }}">
+                        <vaadin-icon icon="vaadin:angle-down"></vaadin-icon>
                     </vaadin-button>
-                    <vaadin-button @click="${(_ev: CustomEvent) => {
+                    <vaadin-button ?disabled=${i == 0} @click="${(_ev: CustomEvent) => {
                         if (i > 0 && i < this.fields.length - 1) {
                             [this.fields[i], this.fields[i - 1]] = [this.fields[i - 1], this.fields[i]]
                         }
                         this.reassignFields()
-                    }}">V
+                    }}">
+                        <vaadin-icon icon="vaadin:angle-up"></vaadin-icon>
                     </vaadin-button>
                     <vaadin-button @click="${(_ev: CustomEvent) => {
                         this.fields.splice(this.fields.indexOf(field), 1)
@@ -155,7 +154,7 @@ class MultiField extends LitElement {
 // value.push('dwa')
 // this.value = []
 // this.value = value;
-                        dispatchEvent(new Event("change"))
+// dispatchEvent(new Event("change"))
                     }}">x
                     </vaadin-button>
                 </vaadin-horizontal-layout>
