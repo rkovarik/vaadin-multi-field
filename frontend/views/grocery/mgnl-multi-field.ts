@@ -77,20 +77,14 @@ class GroceryView extends LitElement {
                     <slot name="label">${(this.label)}</slot>
                     ${required}
                 </div>
-                <slot class="field"></slot>
+                <slot class="field" style="display='none'"></slot>
                 <vaadin-vertical-layout>
                     ${repeat(this.inputs, input => html`
                         <vaadin-horizontal-layout>
                             ${input}
                             <vaadin-button @click="${(_ev: CustomEvent) => {
-                                if (_ev.target instanceof Node) {
-                                    // let parentElement = _ev.target?.parentElement;
-                                    // if (parentElement) {
-                                    //     console.error(this.inputs)
-                                        this.inputs.delete(input) //parentElement?.children.item(0)
-                                        this.inputs = new Set(this.inputs)
-                                    // }
-                                }
+                                this.inputs.delete(input)
+                                this.inputs = new Set(this.inputs)
                             }}">x
                             </vaadin-button>
                         </vaadin-horizontal-layout>
@@ -110,9 +104,9 @@ class GroceryView extends LitElement {
         `;
     }
 
-    addField(e: CustomEvent) {
-        this.value = this.value += this.separator;
-        // this.inputs.add(new TextField());
+    addField(_e: CustomEvent) {
+        // this.value = this.value + this.separator;
+        this.inputs = new Set(this.inputs.add(new TextField()));
     }
 }
 
