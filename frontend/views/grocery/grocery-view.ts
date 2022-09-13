@@ -3,6 +3,11 @@ import {customElement} from 'lit/decorators.js';
 import {View} from '../../views/view';
 import "./mgnl-multi-field";
 import "@vaadin/checkbox"
+import "@vaadin/combo-box"
+import "@vaadin/date-picker"
+import "@vaadin/email-field"
+import "@vaadin/text-area"
+import "@vaadin/number-field"
 import {Binder, field} from "@hilla/form";
 import BeanModel from "Frontend/generated/com/example/application/bean/BeanModel";
 import {CounterEndpoint} from "Frontend/generated/endpoints";
@@ -17,7 +22,7 @@ export class GroceryView extends View {
         return html`
             <vaadin-form-layout>
                 <mgnl-multi-field label="Multi" value="\t1\t" ...="${field(this.binder.model.aString)}">
-                    <vaadin-text-field></vaadin-text-field>
+                    <vaadin-number-field required .items="${['1', '2', 'Dear']}"></vaadin-multi-select-combo-box>
                 </mgnl-multi-field>
                 <vaadin-button @click="${() => {
                     return this.binder.submitTo(CounterEndpoint.submit);

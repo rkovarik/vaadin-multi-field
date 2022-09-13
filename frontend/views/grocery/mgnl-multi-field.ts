@@ -30,13 +30,19 @@ class GroceryView extends LitElement {
 
     @property() separator = "\t";
 
-    @state() private fields: Set<Element | null> = new Set();
+    @state() private fields: Set<HTMLElement> = new Set();
 
     get value() {
         let values = '';
-        this.fields.forEach(input => {
+        this.fields.forEach(field => {
             // console.error(input?.localName)
-            let value = input?.getElementsByTagName("input").item(0)?.value;
+            let input = field.getElementsByTagName("input").item(0);
+            let value
+            if (input) {
+                value = input?.value;
+            } else {
+                value = field.getElementsByTagName("textarea").item(0)?.value;
+            }
             values += value + "\t";
         })
         return values;
@@ -44,8 +50,11 @@ class GroceryView extends LitElement {
 
     set value(values) {
         let inputs = new Set<HTMLElement>();
+        let fieldTemplate = this.children.item(0);
+        fieldTemplate?.removeAttribute("hidden")
+
         values.split(this.separator).forEach(value => {
-            let field: Node | undefined = this.children.item(0)?.cloneNode();
+            let field: Node | undefined = fieldTemplate?.cloneNode(true);
             // console.error("" + this.children.item(0)?.localName)
             if (field instanceof HTMLElement) {
                 field.setAttribute("value", value);
@@ -54,6 +63,7 @@ class GroceryView extends LitElement {
             }
         })
         this.fields = inputs;
+        // fieldTemplate?.setAttribute("hidden", "true")
     }
 
     protected createRenderRoot(): Element | ShadowRoot {
@@ -66,19 +76,20 @@ class GroceryView extends LitElement {
             required = html`<span ?hidden part=\"required-indicator\" aria-hidden=\"true\" on-click=\"focus\"
                                   ?visible=\"true\">*</span>`
         }
+        //TODO validation of inner fields
         return html`
             <div class="vaadin-field-container">
                 <div part="label">
                     <slot name="label">${(this.label)}</slot>
                     ${required}
                 </div>
-                <slot class="field" style="display='none'"></slot>
+                <!--                <slot class="field"></slot>-->
                 <vaadin-vertical-layout>
-                    ${repeat(this.fields, input => html`
+                    ${repeat(this.fields, field => html`
                         <vaadin-horizontal-layout>
-                            ${input}
+                            ${field}
                             <vaadin-button @click="${(_ev: CustomEvent) => {
-                                this.fields.delete(input)
+                                this.fields.delete(field)
                                 this.fields = new Set(this.fields)
                             }}">x
                             </vaadin-button>
@@ -101,7 +112,13 @@ class GroceryView extends LitElement {
 
     addField(_e: CustomEvent) {
         // this.value = this.value + this.separator;
-        this.fields = new Set(this.fields.add(new TextField()));
+        let fieldTemplate = this.children.item(0);
+        if (fieldTemplate) {
+            let cloneNode = fieldTemplate.cloneNode(true);
+            if (cloneNode instanceof HTMLElement) {
+                this.fields = new Set(this.fields.add(cloneNode));
+            }
+        }
     }
 }
 

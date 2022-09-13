@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import javax.annotation.RegEx;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
@@ -15,6 +16,7 @@ public class Bean {
     @NotEmpty
     private String aString = "\t1\t2\t";
 
+    @Email
     public Collection<String> getCollection() {
         return collection;
     }
