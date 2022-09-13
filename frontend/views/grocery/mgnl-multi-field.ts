@@ -90,7 +90,6 @@ class MultiField extends LitElement {
                 <div part="helper-text">
                     <slot name="helper"></slot>
                 </div>
-
                 <div part="error-message">
                     <slot name="error-message"></slot>
                     ${this.errorMessage}

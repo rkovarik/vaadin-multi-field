@@ -22,13 +22,12 @@ export class GroceryView extends View {
     render() {
         return html`
             <vaadin-form-layout>
-                <mgnl-multi-field label="Multi" value="\t1\t" ...="${field(this.binder.model.collection)}">
-                    <vaadin-text-field required .items="${['1', '2', 'Dear']}"></vaadin-text-field>
+                <mgnl-multi-field label="Email" value="${[1,2]}" ...="${field(this.binder.model.emails)}">
+                    <vaadin-email-field required></vaadin-email-field>
                 </mgnl-multi-field>
-                <vaadin-button @click="${() => {
-                    return this.binder.submit()
-                            // .submitTo(CounterEndpoint.submit);
-                }}"></vaadin-button>
+                <vaadin-button style="width: 100%" @click="${() => {
+                    return this.binder.submitTo(CounterEndpoint.submit);
+                }}"><vaadin-icon icon="vaadin:user-check"></vaadin-icon></vaadin-button>
             </vaadin-form-layout>`;
     }
 

@@ -8,14 +8,14 @@ import dev.hilla.Nonnull;
 @Endpoint
 @AnonymousAllowed
 public class CounterEndpoint {
-    /**
-     * A method that adds one to the argument.
-     */
+
+    private Bean bean = new Bean();
+
     public @Nonnull Bean getBean() {
-        return new Bean();
+        return bean;
     }
 
     public void submit(Bean bean) {
-        var string = bean.getaString();
+        this.bean = bean;
     }
 }
