@@ -155,7 +155,7 @@ class MultiField extends LitElement {
 // value.push('dwa')
 // this.value = []
 // this.value = value;
-// dispatchEvent(new Event("change"))
+                        dispatchEvent(new Event("change"))
                     }}">x
                     </vaadin-button>
                 </vaadin-horizontal-layout>

@@ -26,7 +26,8 @@ export class GroceryView extends View {
                     <vaadin-text-field required .items="${['1', '2', 'Dear']}"></vaadin-text-field>
                 </mgnl-multi-field>
                 <vaadin-button @click="${() => {
-                    return this.binder.submitTo(CounterEndpoint.submit);
+                    return this.binder.submit()
+                            // .submitTo(CounterEndpoint.submit);
                 }}"></vaadin-button>
             </vaadin-form-layout>`;
     }
