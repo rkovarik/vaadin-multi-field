@@ -5,8 +5,11 @@ import java.util.Collection;
 
 import javax.annotation.RegEx;
 import javax.validation.constraints.Email;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 
 public class Bean {
@@ -16,7 +19,7 @@ public class Bean {
     @NotEmpty
     private String aString = "\t1\t2\t";
 
-    @Email
+    @Size(min = 1, max = 2)
     public Collection<String> getCollection() {
         return collection;
     }

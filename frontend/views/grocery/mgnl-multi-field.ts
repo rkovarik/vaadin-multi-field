@@ -5,11 +5,6 @@ import '@vaadin/custom-field';
 import '@vaadin/text-field'
 import '@vaadin/vertical-layout'
 import '@vaadin/icon'
-import {Icon} from "@vaadin/icon";
-import {Button} from "@vaadin/button";
-import {TextField} from "@vaadin/text-field";
-import {VerticalLayout} from "@vaadin/vertical-layout";
-import {HorizontalLayout} from "@vaadin/horizontal-layout";
 import {
     AbstractModel,
     Binder,
@@ -17,34 +12,35 @@ import {
     ModelConstructor,
     VaadinFieldStrategy
 } from "@hilla/form";
-import {Checkbox} from "@vaadin/checkbox";
-import {ComboBox} from "@vaadin/combo-box";
 
 @customElement('mgnl-multi-field')
-class GroceryView extends LitElement {
+class MultiField extends LitElement {
 
     @property({type: String}) label = '';
     @property({type: String}) name = '';
     @property({type: Boolean}) required = false;
     @property({type: String}) errorMessage = '';
 
-    @property() separator = "\t";
+    @property() separator = "\t"; //TODO remove?
 
+    // @property( {type: [String]}) _value = [];
     @state() private fields: Set<HTMLElement> = new Set();
 
     get value() {
-        let values = '';
+        let values: string[] = [];
         this.fields.forEach(field => {
-            // console.error(input?.localName)
             let input = field.getElementsByTagName("input").item(0);
-            let value
+            let value;
             if (input) {
                 value = input?.value;
             } else {
                 value = field.getElementsByTagName("textarea").item(0)?.value;
             }
-            values += value + "\t";
+            if (value) {
+                values.push(value);
+            }
         })
+        // console.error("value:" + values)
         return values;
     }
 
@@ -52,18 +48,19 @@ class GroceryView extends LitElement {
         let inputs = new Set<HTMLElement>();
         let fieldTemplate = this.children.item(0);
         fieldTemplate?.removeAttribute("hidden")
-
-        values.split(this.separator).forEach(value => {
-            let field: Node | undefined = fieldTemplate?.cloneNode(true);
-            // console.error("" + this.children.item(0)?.localName)
-            if (field instanceof HTMLElement) {
-                field.setAttribute("value", value);
-                inputs.add(field);
-                field.focus()
+        if (values) {
+            for (const element of values) {
+                // values.forEach(value => { //.split(this.separator)
+                let field: Node | undefined = fieldTemplate?.cloneNode(true);
+                // console.error("" + this.children.item(0)?.localName)
+                if (field instanceof HTMLElement) {
+                    field.setAttribute("value", element);
+                    inputs.add(field);
+                    field.focus()
+                }
             }
-        })
+        }
         this.fields = inputs;
-        // fieldTemplate?.setAttribute("hidden", "true")
     }
 
     protected createRenderRoot(): Element | ShadowRoot {
@@ -76,7 +73,6 @@ class GroceryView extends LitElement {
             required = html`<span ?hidden part=\"required-indicator\" aria-hidden=\"true\" on-click=\"focus\"
                                   ?visible=\"true\">*</span>`
         }
-        //TODO validation of inner fields
         return html`
             <div class="vaadin-field-container">
                 <div part="label">
@@ -89,15 +85,25 @@ class GroceryView extends LitElement {
                         <vaadin-horizontal-layout>
                             ${field}
                             <vaadin-button @click="${(_ev: CustomEvent) => {
+                                // field.removeAttribute("value");
                                 this.fields.delete(field)
                                 this.fields = new Set(this.fields)
+                                // let value = this.value;
+                                // value.push('dwa')
+                                // this.value = []
+                                // this.value = value;
+                                dispatchEvent(new Event("change"))
                             }}">x
                             </vaadin-button>
                         </vaadin-horizontal-layout>
                     `)}
                 </vaadin-vertical-layout>
-                <vaadin-button @click="${this.addField}">+</vaadin-button>
-
+                <vaadin-button @click="${(_ev: CustomEvent) => {
+                    this.addField(_ev)
+                    // this.value.push("null");
+                    // this.value = Object.assign([], this.value);
+                }}">+
+                </vaadin-button>
                 <div part="helper-text">
                     <slot name="helper"></slot>
                 </div>
@@ -111,32 +117,33 @@ class GroceryView extends LitElement {
     }
 
     addField(_e: CustomEvent) {
-        // this.value = this.value + this.separator;
         let fieldTemplate = this.children.item(0);
         if (fieldTemplate) {
-            let cloneNode = fieldTemplate.cloneNode(true);
+            let cloneNode = fieldTemplate.cloneNode();
             if (cloneNode instanceof HTMLElement) {
+                // let attribute = cloneNode.getAttribute("value") || '';
+                // if (attribute) {}
+                // this.value.push('attribute')
+                // this.value = this.value
+                // }
+                // dispatchEvent(new Event("change"))
+                cloneNode.setAttribute("value", '');
                 this.fields = new Set(this.fields.add(cloneNode));
             }
         }
     }
 }
 
-export default GroceryView;
-
-class MultiFieldStrategy extends VaadinFieldStrategy {
-
-}
+export default MultiField;
 
 export class MultiFieldBinder<T, M extends AbstractModel<T>> extends Binder<T, M> {
 
     constructor(context: Element, model: ModelConstructor<T, M>) {
-        super(context, model);
+        super(context, model); // {onChange: (ev) => console.error("" + ev)}
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     getFieldStrategy(element: any): FieldStrategy {
-        // console.error(element.constructor.version)
         if (element.localName === 'mgnl-multi-field') {
             return new VaadinFieldStrategy(element);
         }

@@ -12,6 +12,7 @@ import {Binder, field} from "@hilla/form";
 import BeanModel from "Frontend/generated/com/example/application/bean/BeanModel";
 import {CounterEndpoint} from "Frontend/generated/endpoints";
 import {MultiFieldBinder} from "Frontend/views/grocery/mgnl-multi-field";
+import {TextField} from "@vaadin/text-field";
 
 @customElement('grocery-view')
 export class GroceryView extends View {
@@ -21,8 +22,8 @@ export class GroceryView extends View {
     render() {
         return html`
             <vaadin-form-layout>
-                <mgnl-multi-field label="Multi" value="\t1\t" ...="${field(this.binder.model.aString)}">
-                    <vaadin-number-field required .items="${['1', '2', 'Dear']}"></vaadin-multi-select-combo-box>
+                <mgnl-multi-field label="Multi" value="\t1\t" ...="${field(this.binder.model.collection)}">
+                    <vaadin-text-field required .items="${['1', '2', 'Dear']}"></vaadin-text-field>
                 </mgnl-multi-field>
                 <vaadin-button @click="${() => {
                     return this.binder.submitTo(CounterEndpoint.submit);
