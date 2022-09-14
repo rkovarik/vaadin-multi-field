@@ -642,7 +642,7 @@ Event: 5824.964 Thread 0x00000001058075b0 redefined class name=com.zeroturnaroun
 Event: 5824.964 Thread 0x00000001058075b0 redefined class name=com.zeroturnaround.jrebelbase.facade.e, count=2
 Event: 5824.964 Thread 0x00000001058075b0 redefined class name=com.zeroturnaround.jrebelbase.facade.g, count=2
 Event: 5824.964 Thread 0x00000001058075b0 redefined class name=com.zeroturnaround.jrebelbase.facade.ad, count=2
-Event: 5825.045 Thread 0x00000001058075b0 redefined class name=com.example.application.bean.Bean, count=2
+Event: 5825.045 Thread 0x00000001058075b0 redefined class name=com.example.application.bean.Personan, count=2
 
 Internal exceptions (20 events):
 Event: 2.859 Thread 0x000000011d286200 Exception <a 'java/lang/NoSuchMethodError'{0x00000005cb402630}: 'java.lang.Object java.lang.invoke.DirectMethodHandle$Holder.invokeStatic(java.lang.Object, int, java.lang.Object)'> (0x00000005cb402630) 

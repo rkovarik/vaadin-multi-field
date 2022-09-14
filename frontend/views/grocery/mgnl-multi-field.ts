@@ -7,34 +7,28 @@ import '@vaadin/vertical-layout'
 import '@vaadin/icon'
 import "@vaadin/icons";
 import {
-    AbstractModel, ArrayModel,
+    AbstractModel,
     Binder,
     FieldStrategy,
     ModelConstructor,
     VaadinFieldStrategy
 } from "@hilla/form";
-import BeanModel from "Frontend/generated/com/example/application/bean/BeanModel";
+import PersonModel from "Frontend/generated/com/example/application/bean/PersonModel";
 
 @customElement('mgnl-multi-field')
 class MultiField extends LitElement {
 
-    // get binder(): Binder<any, any> {
-    //     return this._binder;
-    // }
-    //
-    // set binder(value: Binder<any, any>) {
-    //     this._binder = value;
-    // }
-
-    @property({type: String}) _binder : MultiFieldBinder<any, any> = new MultiFieldBinder(this, BeanModel);
+    @property({type: String}) _binder : MultiFieldBinder<any, any> = new MultiFieldBinder(this, PersonModel);
     @property({type: String}) label = '';
     @property({type: String}) name = '';
     @property({type: Boolean}) required = false;
     @property({type: String}) errorMessage = '';
+    @property({type: String}) valueSeparator = ',';
+
     @state() private fields: HTMLElement[] = [];
 
     get value() {
-        let values: string[] = [];
+        let values = '';
         this.fields.forEach(field => {
             let input = field.getElementsByTagName("input").item(0);
             let value;
@@ -44,7 +38,7 @@ class MultiField extends LitElement {
                 value = field.getElementsByTagName("textarea").item(0)?.value;
             }
             if (value) {
-                values.push(value);
+                values += this.valueSeparator + value;
             }
         })
         return values;
@@ -54,7 +48,7 @@ class MultiField extends LitElement {
         let fieldTemplate = this.getFieldTemplate();
         // fieldTemplate?.setAttribute("style", 'display: none')
         if (values) {
-            for (const element of values) {
+            for (const element of values.split(this.valueSeparator)) {
                 let field: Node | undefined = fieldTemplate?.cloneNode(true);
                 if (field instanceof HTMLElement) {
                     field.setAttribute("value", element);

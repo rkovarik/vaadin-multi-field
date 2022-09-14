@@ -9,24 +9,23 @@ import "@vaadin/email-field"
 import "@vaadin/text-area"
 import "@vaadin/number-field"
 import {Binder, field} from "@hilla/form";
-import BeanModel from "Frontend/generated/com/example/application/bean/BeanModel";
-import {CounterEndpoint} from "Frontend/generated/endpoints";
+import {PersonEndpoint} from "Frontend/generated/endpoints";
 import {MultiFieldBinder} from "Frontend/views/grocery/mgnl-multi-field";
-import {TextField} from "@vaadin/text-field";
+import PersonModel from "Frontend/generated/com/example/application/bean/PersonModel";
 
 @customElement('grocery-view')
 export class GroceryView extends View {
 
-    private binder = new MultiFieldBinder(this, BeanModel)
+    private binder = new MultiFieldBinder(this, PersonModel)
 
     render() {
         return html`
             <vaadin-form-layout>
-                <mgnl-multi-field .binder="${this.binder}" label="Email" value="${[1,2]}" ...="${field(this.binder.model.emails)}">
+                <mgnl-multi-field .binder="${this.binder}" label="Emails" value="${[1,2]}" ...="${field(this.binder.model.emails)}">
                     <vaadin-email-field required autofocus></vaadin-email-field>
                 </mgnl-multi-field>
                 <vaadin-button style="width: 100%" @click="${() => {
-                    return this.binder.submitTo(CounterEndpoint.submit);
+                    return this.binder.submitTo(PersonEndpoint.submit);
                 }}"><vaadin-icon icon="vaadin:user-check"></vaadin-icon></vaadin-button>
             </vaadin-form-layout>`;
     }
@@ -34,7 +33,7 @@ export class GroceryView extends View {
 
     async firstUpdated(arg: any) {
         super.firstUpdated(arg);
-        this.binder.read(await CounterEndpoint.getBean());
+        this.binder.read(await PersonEndpoint.getBean());
     }
 
     connectedCallback() {
