@@ -10,8 +10,9 @@ import "@vaadin/text-area"
 import "@vaadin/number-field"
 import {Binder, field} from "@hilla/form";
 import {PersonEndpoint} from "Frontend/generated/endpoints";
-import {MultiFieldBinder} from "Frontend/views/grocery/mgnl-multi-field";
+import MultiField, {MultiFieldBinder} from "Frontend/views/grocery/mgnl-multi-field";
 import PersonModel from "Frontend/generated/com/example/application/bean/PersonModel";
+import MgnlMultiField from "Frontend/views/grocery/mgnl-multi-field";
 
 @customElement('grocery-view')
 export class GroceryView extends View {
@@ -20,20 +21,29 @@ export class GroceryView extends View {
 
     render() {
         return html`
-            <vaadin-form-layout>
-                <mgnl-multi-field .binder="${this.binder}" label="Emails" value="${[1,2]}" ...="${field(this.binder.model.emails)}">
+            <vaadin-vertical-layout>
+                <!--                <vaadin-form-item>-->
+                <mgnl-multi-field .binder="${this.binder}" label="Emails" value="${[1, 2]}"
+                                  ...="${field(this.binder.model.emails)}">
                     <vaadin-email-field required autofocus></vaadin-email-field>
                 </mgnl-multi-field>
                 <vaadin-button style="width: 100%" @click="${() => {
                     return this.binder.submitTo(PersonEndpoint.submit);
-                }}"><vaadin-icon icon="vaadin:user-check"></vaadin-icon></vaadin-button>
-            </vaadin-form-layout>`;
+                }}">
+                    <vaadin-icon icon="vaadin:user-check"></vaadin-icon>
+                </vaadin-button>
+                <!--                </vaadin-form-item>-->
+            </vaadin-vertical-layout>`;
     }
 
 
     async firstUpdated(arg: any) {
         super.firstUpdated(arg);
         this.binder.read(await PersonEndpoint.getBean());
+        // let multiField = this.getElementsByTagName("mgnl-multi-field").item(0);
+        // if (multiField instanceof MgnlMultiField) {
+        //     multiField.addField()
+        // }
     }
 
     connectedCallback() {

@@ -7,7 +7,7 @@ import javax.validation.constraints.Pattern;
 public class Person {
 
     @Pattern(
-            regexp = "^([_A-Za-z0-9-]+(\\\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9]+(\\\\.[A-Za-z0-9]+)*(\\\\.[A-Za-z]{2,}),?)*$",
+            regexp = "^([_A-Za-z0-9-]+(\\\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9]+(\\\\.[A-Za-z0-9]+)*(\\\\.[A-Za-z,]{2,}))*$",
             message = "Please enter 1 or 2 email addresses"
     )
     private String emails = "private@email.com,public@email.com";

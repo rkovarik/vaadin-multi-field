@@ -52,7 +52,6 @@ class MultiField extends LitElement {
                 let field: Node | undefined = fieldTemplate?.cloneNode(true);
                 if (field instanceof HTMLElement) {
                     field.setAttribute("value", element);
-                    // field.removeAttribute("hidden")
                     this.fields.push(field);
                 }
             }
@@ -78,7 +77,7 @@ class MultiField extends LitElement {
                                   ?visible=\"true\">*</span>`
         }
         return html`
-            <div class="vaadin-field-container">
+            <vaadin-vertical-layout class="vaadin-field-container">
                 <div part="label">
                     <slot name="label">${(this.label)}</slot>
                     ${required}
@@ -87,11 +86,7 @@ class MultiField extends LitElement {
                 <vaadin-vertical-layout>
                     ${this.renderFields()}
                 </vaadin-vertical-layout>
-                <vaadin-button style="width: 100%" @click="${(_ev: CustomEvent) => {
-                    this.addField(_ev);
-                    // console.error(this._binder.value)
-                    // this._binder.validate()
-                }}">
+                <vaadin-button style="width: 100%" @click="${(_ev: CustomEvent) => this.addField()}">
                     <vaadin-icon icon="vaadin:plus"></vaadin-icon>
                 </vaadin-button>
                 <div part="helper-text">
@@ -101,18 +96,16 @@ class MultiField extends LitElement {
                     <slot name="error-message"></slot>
                     ${this.errorMessage}
                 </div>
-            </div>
+            </vaadin-vertical-layout>
         `;
     }
 
-    addField(_e: CustomEvent) {
+    addField() {
         let fieldTemplate = this.getFieldTemplate();
         if (fieldTemplate) {
             let cloneNode = fieldTemplate.cloneNode(true);
             fieldTemplate?.setAttribute("hidden", "true")
             if (cloneNode instanceof HTMLElement) {
-                dispatchEvent(new Event("oninput"))
-                // cloneNode.setAttribute("value", '');
                 this.fields.push(cloneNode)
                 this.reassignFields();
             }
@@ -143,11 +136,6 @@ class MultiField extends LitElement {
                     <vaadin-button @click="${(_ev: CustomEvent) => {
                         this.fields.splice(this.fields.indexOf(field), 1)
                         this.reassignFields()
-// this.fields = new Set(this.fields)
-// let value = this.value;
-// value.push('dwa')
-// this.value = []
-// this.value = value;
                     }}"><vaadin-icon icon="vaadin:trash"></vaadin-icon>
                     </vaadin-button>
                     <vaadin-button ?disabled=${i == this.fields.length - 1} @click="${(_ev: CustomEvent) => {
@@ -168,14 +156,6 @@ class MultiField extends LitElement {
 export default MultiField;
 
 export class MultiFieldBinder<T, M extends AbstractModel<T>> extends Binder<T, M> {
-
-    constructor(context: Element, model: ModelConstructor<T, M>) {
-        super(context, model);
-            // , {onChange: (ev) => {
-            //     (context as any).requestUpdate();
-            //     console.error("" + ev.detail);
-            // }});
-    }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     getFieldStrategy(element: any): FieldStrategy {
