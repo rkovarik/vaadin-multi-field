@@ -2,14 +2,16 @@ package com.example.application.bean;
 
 
 import javax.validation.constraints.Email;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 public class Person {
 
-    @Pattern(
-            regexp = "^([_A-Za-z0-9-]+(\\\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9]+(\\\\.[A-Za-z0-9]+)*(\\\\.[A-Za-z,]{2,}))*$",
-            message = "Please enter 1 or 2 email addresses"
-    )
+//    @Pattern(
+//            regexp = "^([_A-Za-z0-9-]+(\\\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9]+(\\\\.[A-Za-z0-9]+)*(\\\\.[A-Za-z,]{2,}))*$",
+//            message = "Please enter 1 or 2 email addresses"
+//    )
+    @NotNull
     private String emails = "private@email.com,public@email.com";
 
     public String getEmails() {

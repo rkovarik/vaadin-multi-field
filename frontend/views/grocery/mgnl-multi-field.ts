@@ -1,6 +1,5 @@
-import {html, LitElement, nothing, PropertyValues} from 'lit';
+import {html, LitElement} from 'lit';
 import {customElement, property, state} from 'lit/decorators.js';
-import {repeat} from 'lit/directives/repeat.js';
 import '@vaadin/custom-field';
 import '@vaadin/text-field'
 import '@vaadin/vertical-layout'
@@ -9,16 +8,13 @@ import "@vaadin/icons";
 import {
     AbstractModel,
     Binder,
-    FieldStrategy,
-    ModelConstructor,
+    FieldStrategy, ModelConstructor,
     VaadinFieldStrategy
 } from "@hilla/form";
-import PersonModel from "Frontend/generated/com/example/application/bean/PersonModel";
 
 @customElement('mgnl-multi-field')
 class MultiField extends LitElement {
 
-    @property({type: String}) _binder : MultiFieldBinder<any, any> = new MultiFieldBinder(this, PersonModel);
     @property({type: String}) label = '';
     @property({type: String}) name = '';
     @property({type: Boolean}) required = false;
@@ -82,7 +78,9 @@ class MultiField extends LitElement {
                     <slot name="label">${(this.label)}</slot>
                     ${required}
                 </div>
-                <!--                <slot class="field"></slot>-->
+                <!-
+                <slot class="field"></slot>
+                -->
                 <vaadin-vertical-layout>
                     ${this.renderFields()}
                 </vaadin-vertical-layout>
@@ -136,7 +134,8 @@ class MultiField extends LitElement {
                     <vaadin-button @click="${(_ev: CustomEvent) => {
                         this.fields.splice(this.fields.indexOf(field), 1)
                         this.reassignFields()
-                    }}"><vaadin-icon icon="vaadin:trash"></vaadin-icon>
+                    }}">
+                        <vaadin-icon icon="vaadin:trash"></vaadin-icon>
                     </vaadin-button>
                     <vaadin-button ?disabled=${i == this.fields.length - 1} @click="${(_ev: CustomEvent) => {
                         if (i >= 0 && i < this.fields.length - 1) {
@@ -156,6 +155,10 @@ class MultiField extends LitElement {
 export default MultiField;
 
 export class MultiFieldBinder<T, M extends AbstractModel<T>> extends Binder<T, M> {
+
+    // constructor(context: Element, model: ModelConstructor<T, M>) {
+    //     super(context, model);
+    // }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     getFieldStrategy(element: any): FieldStrategy {

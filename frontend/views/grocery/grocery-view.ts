@@ -21,19 +21,17 @@ export class GroceryView extends View {
 
     render() {
         return html`
-            <vaadin-vertical-layout>
-                <!--                <vaadin-form-item>-->
-                <mgnl-multi-field .binder="${this.binder}" label="Emails" value="${[1, 2]}"
-                                  ...="${field(this.binder.model.emails)}">
+            <vaadin-form-layout>
+                <mgnl-multi-field label="Emails" ...="${field(this.binder.model.emails)}">
                     <vaadin-email-field required autofocus></vaadin-email-field>
                 </mgnl-multi-field>
                 <vaadin-button style="width: 100%" @click="${() => {
+                    this.binder.submitTo(PersonEndpoint.submit)
                     return this.binder.submitTo(PersonEndpoint.submit);
                 }}">
                     <vaadin-icon icon="vaadin:user-check"></vaadin-icon>
                 </vaadin-button>
-                <!--                </vaadin-form-item>-->
-            </vaadin-vertical-layout>`;
+            </vaadin-form-layout>`;
     }
 
 
