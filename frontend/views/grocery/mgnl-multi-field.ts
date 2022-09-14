@@ -1,4 +1,4 @@
-import {html, LitElement, nothing} from 'lit';
+import {html, LitElement, nothing, PropertyValues} from 'lit';
 import {customElement, property, state} from 'lit/decorators.js';
 import {repeat} from 'lit/directives/repeat.js';
 import '@vaadin/custom-field';
@@ -7,22 +7,30 @@ import '@vaadin/vertical-layout'
 import '@vaadin/icon'
 import "@vaadin/icons";
 import {
-    AbstractModel,
+    AbstractModel, ArrayModel,
     Binder,
     FieldStrategy,
     ModelConstructor,
     VaadinFieldStrategy
 } from "@hilla/form";
+import BeanModel from "Frontend/generated/com/example/application/bean/BeanModel";
 
 @customElement('mgnl-multi-field')
 class MultiField extends LitElement {
 
+    // get binder(): Binder<any, any> {
+    //     return this._binder;
+    // }
+    //
+    // set binder(value: Binder<any, any>) {
+    //     this._binder = value;
+    // }
+
+    @property({type: String}) _binder : MultiFieldBinder<any, any> = new MultiFieldBinder(this, BeanModel);
     @property({type: String}) label = '';
     @property({type: String}) name = '';
     @property({type: Boolean}) required = false;
     @property({type: String}) errorMessage = '';
-
-    // @property( {type: [String]}) _value = [];
     @state() private fields: HTMLElement[] = [];
 
     get value() {
@@ -39,27 +47,30 @@ class MultiField extends LitElement {
                 values.push(value);
             }
         })
-        // console.error("value:" + values)
         return values;
     }
 
-    set value(values) {
-        let inputs = [];
-        let fieldTemplate = this.children.item(0);
-        fieldTemplate?.removeAttribute("hidden")
+    set value(values) { //TODO shortcut listener
+        let fieldTemplate = this.getFieldTemplate();
+        // fieldTemplate?.setAttribute("style", 'display: none')
         if (values) {
             for (const element of values) {
-                // values.forEach(value => { //.split(this.separator)
                 let field: Node | undefined = fieldTemplate?.cloneNode(true);
-                // console.error("" + this.children.item(0)?.localName)
                 if (field instanceof HTMLElement) {
                     field.setAttribute("value", element);
-                    inputs.push(field);
-                    field.focus()
+                    // field.removeAttribute("hidden")
+                    this.fields.push(field);
                 }
             }
         }
-        this.fields = inputs;
+        fieldTemplate?.setAttribute("hidden", 'true')
+        this.reassignFields();
+    }
+
+    private getFieldTemplate() {
+        let element = this.children.item(0);
+        element?.removeAttribute("hidden")
+        return element;
     }
 
     protected createRenderRoot(): Element | ShadowRoot {
@@ -83,7 +94,9 @@ class MultiField extends LitElement {
                     ${this.renderFields()}
                 </vaadin-vertical-layout>
                 <vaadin-button style="width: 100%" @click="${(_ev: CustomEvent) => {
-                    this.addField(_ev)
+                    this.addField(_ev);
+                    // console.error(this._binder.value)
+                    // this._binder.validate()
                 }}">
                     <vaadin-icon icon="vaadin:plus"></vaadin-icon>
                 </vaadin-button>
@@ -99,17 +112,13 @@ class MultiField extends LitElement {
     }
 
     addField(_e: CustomEvent) {
-        let fieldTemplate = this.children.item(0);
+        let fieldTemplate = this.getFieldTemplate();
         if (fieldTemplate) {
-            let cloneNode = fieldTemplate.cloneNode();
+            let cloneNode = fieldTemplate.cloneNode(true);
+            fieldTemplate?.setAttribute("hidden", "true")
             if (cloneNode instanceof HTMLElement) {
-                // let attribute = cloneNode.getAttribute("value") || '';
-                // if (attribute) {}
-                // this.value.push('attribute')
-                // this.value = this.value
-                // }
-                // dispatchEvent(new Event("change"))
-                cloneNode.setAttribute("value", '');
+                dispatchEvent(new Event("oninput"))
+                // cloneNode.setAttribute("value", '');
                 this.fields.push(cloneNode)
                 this.reassignFields();
             }
@@ -126,13 +135,12 @@ class MultiField extends LitElement {
         const itemTemplates = [];
         for (let i = 0; i < this.fields.length; i++) {
             let field = this.fields[i]
-            let disabled = i == 0;
             itemTemplates.push(html`
                 <vaadin-horizontal-layout>
                     ${field}
                     <vaadin-button ?disabled=${i == 0} @click="${(_ev: CustomEvent) => {
-                        if (i > 0 && i < this.fields.length - 1) {
-                            [this.fields[i], this.fields[i - 1]] = [this.fields[i - 1], this.fields[i]]
+                        if (i > 0) { // && i < this.fields.length - 1
+                            [this.fields[i - 1], this.fields[i]] = [this.fields[i], this.fields[i - 1]]
                         }
                         this.reassignFields()
                     }}">
@@ -146,7 +154,6 @@ class MultiField extends LitElement {
 // value.push('dwa')
 // this.value = []
 // this.value = value;
-// dispatchEvent(new Event("change"))
                     }}"><vaadin-icon icon="vaadin:trash"></vaadin-icon>
                     </vaadin-button>
                     <vaadin-button ?disabled=${i == this.fields.length - 1} @click="${(_ev: CustomEvent) => {
@@ -169,7 +176,11 @@ export default MultiField;
 export class MultiFieldBinder<T, M extends AbstractModel<T>> extends Binder<T, M> {
 
     constructor(context: Element, model: ModelConstructor<T, M>) {
-        super(context, model); // {onChange: (ev) => console.error("" + ev)}
+        super(context, model);
+            // , {onChange: (ev) => {
+            //     (context as any).requestUpdate();
+            //     console.error("" + ev.detail);
+            // }});
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

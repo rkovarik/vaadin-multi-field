@@ -22,8 +22,8 @@ export class GroceryView extends View {
     render() {
         return html`
             <vaadin-form-layout>
-                <mgnl-multi-field label="Email" value="${[1,2]}" ...="${field(this.binder.model.emails)}">
-                    <vaadin-email-field required></vaadin-email-field>
+                <mgnl-multi-field .binder="${this.binder}" label="Email" value="${[1,2]}" ...="${field(this.binder.model.emails)}">
+                    <vaadin-email-field required autofocus></vaadin-email-field>
                 </mgnl-multi-field>
                 <vaadin-button style="width: 100%" @click="${() => {
                     return this.binder.submitTo(CounterEndpoint.submit);
